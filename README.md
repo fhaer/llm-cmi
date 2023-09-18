@@ -9,7 +9,7 @@ Requirements:
 - API keys for OpenAI and/or Replicate set with the "-a" option shown below
 - For local inference, llama.cpp is required and LLM files need to be present in a subdirectory "models"
 
-Usage, parameters and further details are as follows:
+Usage, parameters and further details:
 
 ```
 > python3 cmi.py --help
