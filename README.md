@@ -4,4 +4,45 @@ Prototype implementation of a model interpreter for generating and rendering con
 
 Note: The prototype is only intended as a feasibility demonstration.
 
-Further details and source code will be available shortly.
+Requirements: 
+- Python 3.11 with the packages listed in requirements.txt
+- API keys for OpenAI and/or Replicate set with the "-a" option shown below
+- For local inference, llama.cpp is required and LLM files need to be present in a subdirectory "models"
+
+The usage and parameters are as follows:
+
+´´´
+> python3 cmi.py --help
+CMI Test Environment v0.1
+
+Usage: cmi.py [-h|--help] [-a|--api-key <api_id>:<api_key>]* [-p <ui_port>]
+
+<api_id> = OpenAI | Replicate
+
+Supported local LLM runtime:
+- Llama.cpp
+
+Supported LLM API clients:
+- OpenAI
+- Replicate
+
+Supported LLMs:
+- OpenAI/gpt-4
+- OpenAI/gpt-4-32k
+- OpenAI/gpt-3.5-turbo
+- OpenAI/gpt-3.5-turbo-16k
+- Replicate/Llama2-70B-Chat
+- Replicate/Llama2-70B
+- Replicate/Llama2-13B
+- Replicate/Llama2-7B
+- Replicate/Code-Llama-34B
+- Llama.cpp/WizardLM-1.1-13B-GGML
+- Llama.cpp/Llama2-13B-GGML
+- Llama.cpp/OpenOrca-Platypus2-13B-GGML
+
+Supported Interpreters:
+- Plantweb/PlantUML
+- Plantweb/Graphviz
+
+The web-based UI will be started at port <ui_port>, default: 8501
+´´´
