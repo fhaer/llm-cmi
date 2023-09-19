@@ -28,14 +28,13 @@ Supported LLM API clients:
 
 Supported LLMs:
 - OpenAI/gpt-4
-- OpenAI/gpt-4-32k
 - OpenAI/gpt-3.5-turbo
 - OpenAI/gpt-3.5-turbo-16k
+- OpenAI/gpt-3.5-turbo-instruct
 - Replicate/Llama2-70B-Chat
 - Replicate/Llama2-70B
 - Replicate/Llama2-13B
 - Replicate/Llama2-7B
-- Replicate/Code-Llama-34B
 - Llama.cpp/WizardLM-1.1-13B-GGML
 - Llama.cpp/Llama2-13B-GGML
 - Llama.cpp/OpenOrca-Platypus2-13B-GGML
@@ -46,3 +45,7 @@ Supported Interpreters:
 
 The web-based UI will be started at port <ui_port>, default: 8501
 ```
+
+Example:
+
+<img src="https://raw.githubusercontent.com/fhaer/llm-cmi/master/cmi-graphviz.png" width="100%" />
