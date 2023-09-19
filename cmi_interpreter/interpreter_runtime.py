@@ -37,21 +37,24 @@ SYNTAX_MATCH = {
 SYNTAX_MATCH_CODE_BLOCK = r'`(.*?)`'
 
 class InterpreterRuntime:
+    """Runs a supported interpreter based on the output of a LLM and returns a rendering of the result"""
 
     def __init__(self):
         print("Load Interpreter Runtime ...")
 
     def initialize_interpreter(self, selected_int, int_parameters):
+        """Sets interpreter parameters"""
+
         print("Initialize Interpreter Runtime ...")
         self.selected_interpreter = selected_int
         self.int_parameters = int_parameters
 
-    def run_syntax(self, llm_input):
+    def run_syntax(self, input_syntax):
+        """Executes the interpreter with the provided concrete syntax"""
 
-        int_input = llm_input
+        int_input = input_syntax
 
-        #int_syntax_match = re.search(interpreter_runtime.SYNTAX_MATCH[self.selected_interpreter], source, flags=re.DOTALL)
-        
+        # Set the engine for the plantweb interpreter and add directives to the code
         plantweb_int_engine = ""
         if self.selected_interpreter == INT_PLANTWEB_PLANTUML:
             plantweb_int_engine = "plantuml"
@@ -79,10 +82,11 @@ class InterpreterRuntime:
         elif self.selected_interpreter == INT_PLANTWEB_DITAA:
             plantweb_int_engine = "ditaa"
 
-        print(self.int_parameters)
+        #print(self.int_parameters)
         plantweb_output_format = self.int_parameters['Output format']
         plantweb_use_cache = self.int_parameters['Use cache']
-            
+        
+        # Execute interpreter
         result = render(
             int_input,
             engine=plantweb_int_engine,
@@ -95,6 +99,7 @@ class InterpreterRuntime:
         result_output = None
         result_format = None
 
+        # Result output in text or image formats
         if len(result) > 0:
             result_output = result[0]
         if len(result) > 1:

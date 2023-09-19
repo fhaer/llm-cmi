@@ -13,6 +13,7 @@ LLM_BY_ID = llm_api_client.LLM_BY_ID | llm_runtime.LLM_BY_ID
 INTERPRETER_ID_LIST = interpreter_runtime.INTERPRETER_IDS
 
 class ConversationManager:
+    """Manages the selected LLM and interpreter with parameters"""
 
     def __init__(self, api_keys, llm_api_client, llm_runtime, interpreter_runtime, data_store):
         print("Load Conversation Manager ...")
@@ -33,6 +34,10 @@ class ConversationManager:
         self.conversational_ui = conversational_ui
 
     def select_llm(self, selected_llm_id):
+        """
+        If the given LLM was not selected before, it is set selected, LLM parameters are reset, and 
+        True is returned; otherwise False is returned.
+        """
 
         if not self.selected_llm_id or self.selected_llm_id != selected_llm_id:
             print("Selected LLM:", selected_llm_id)
@@ -46,10 +51,14 @@ class ConversationManager:
         return False
 
     def set_llm_parameters(self):
+        """
+        Sets initial LLM parameters and initializes a LLM API or a local runtime. 
+        Returns parameters as parameter binding to be connected to, e.g., UI controls.
+        """
 
         if not self.llm_parameters:
 
-            # set default values depending on the API or runtime
+            # set default values for the selected LLM, running via API or a runtime
             for api_id in LLM_API_ID_LIST:
                 if self.selected_llm_id.startswith(api_id):
                     self.llm_parameters_default = llm_api_client.PARAMETER_DEFAULTS[api_id].copy()
@@ -62,6 +71,7 @@ class ConversationManager:
                     self.llm_parameters = llm_runtime.PARAMETER_DEFAULTS[rt_id].copy()
                     break
 
+            # get API key
             api_key = ""
             api_selected = False
             for api_id in LLM_API_ID_LIST:
@@ -71,6 +81,7 @@ class ConversationManager:
                         api_key = self.api_keys[api_id]
                     break
 
+            # initialize LLM API or runtime
             if api_selected:
                 self.llm_api_client.initialize_llm(
                     self.selected_llm_id, self.selected_llm_api_id, self.llm_parameters, api_key)
@@ -85,6 +96,10 @@ class ConversationManager:
         return self.llm_parameters
 
     def select_interpreter(self, selected_int_id):
+        """
+        If the given interpreter was not selected before, it is set selected, interpreter parameters are reset, and 
+        True is returned; otherwise False is returned.
+        """
 
         if not self.selected_int_id or self.selected_int_id != selected_int_id:
             print("Selected interpreter:", selected_int_id)
@@ -97,6 +112,10 @@ class ConversationManager:
         return False
 
     def set_interpreter_parameters(self):
+        """
+        Sets initial interpreter parameters and initializes an interpreter. 
+        Returns parameters as parameter binding to be connected to, e.g., UI controls.
+        """
 
         if not self.int_parameters:
             # set default values depending on the interpreter
@@ -113,11 +132,18 @@ class ConversationManager:
         return self.int_parameters
 
     def enter_prompt(self, context, prompt):
+        """
+        Executes a prompt string with the given context as message array.
+        Returns the response as tuple (items_wrapped, item_function) where item_function is a 
+        lambda function extracting the wrapped response items.
+        """
         print("Prompt:", prompt)
 
+        # store LLM configuration and prompt
         self.data_store.set_llm_configuration(self.selected_llm_id, self.llm_parameters)
         self.data_store.insert_prompt(prompt)
         
+        # run prompt with an API
         for api_id in LLM_API_ID_LIST:
             if self.selected_llm_id.startswith(api_id):
 
@@ -126,6 +152,7 @@ class ConversationManager:
                 (items_wrapped, item_function) = self.llm_api_client.request_run_prompt(context)
                 break
 
+        # run prompt with a runtime
         for rt_id in LLM_RUNTIME_ID_LIST:
             if self.selected_llm_id.startswith(rt_id):
 
@@ -137,6 +164,11 @@ class ConversationManager:
         return (items_wrapped, item_function)
 
     def parse_llm_response(self, llm_response, input_syntax=None):
+        """
+        Parses an LLM response and, if a supported concrete syntax is found, starts the interpreter.
+        If an LLM response contains concrete syntax, it is parsed and returned. If an input syntax is 
+        given for the interpreter, the interpreter is run and the result is returned.
+        """
 
         output = None
 

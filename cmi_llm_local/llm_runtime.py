@@ -36,6 +36,7 @@ MSG_FORMAT = "format"
 MSG_FORMAT_TXT = "text"
 
 class LLMRuntime:
+    """Runs locally a LLM runtime such as llama.cpp"""
 
     def __init__(self):
         print("Load LLM Runtime ...")
@@ -45,6 +46,8 @@ class LLMRuntime:
         self.llama_cpp = None
 
     def load_llm_files(self, selected_llm, llm_parameters):
+        """Load LLM files and initialize with runtime"""
+
         print("Load LLM Files ...")
 
         self.selected_llm = selected_llm
@@ -58,6 +61,8 @@ class LLMRuntime:
             )
 
     def run_llm_llama_cpp(self, context, prompt):
+        """Run llama.cpp with the given context as message array. The prompt is assumed as last message of the context."""
+
         dialogue = CTX_TEMPLATE + "\\n\\n"
         for message in context:
             if MSG_FORMAT in message.keys() and ROLE in message.keys():
@@ -77,6 +82,11 @@ class LLMRuntime:
         return (items, item_function)
 
     def run_prompt(self, prompt):
+        """
+        Executes the prompt. Returns the response as tuple (items_wrapped, item_function) where item_function is a 
+        lambda function extracting the wrapped response items.
+        """
+        
         (items_wrapped, item_function) = self.run_llm_llama_cpp(prompt)
         return (items_wrapped, item_function)
 

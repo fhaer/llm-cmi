@@ -29,6 +29,7 @@ AVATAR_USER = "U"
 AVATAR_INTER = "I"
 
 class ConversationalUI:
+    """Web UI of the conversational interface using Streamlit"""
 
     def __init__(self, ui_port, ui_title, ui_init_message, api_keys, conversation_manager):
         print("Load Conversational UI ...")
@@ -39,6 +40,7 @@ class ConversationalUI:
         self.conversation_manager = conversation_manager
 
     def update_web_ui(self):
+        """Updates the web UI with selectable LLMs, interpreters, current parameters, and messages of the conversation"""
 
         # App title
         st.set_page_config(page_title=self.ui_title)
@@ -47,12 +49,13 @@ class ConversationalUI:
         if SESSION_KEY_MESSAGES not in st.session_state.keys():
             st.session_state[SESSION_KEY_MESSAGES] = [ {ROLE: ROLE_AS, MSG: INIT_MSG, MSG_FORMAT: MSG_FORMAT_TXT} ]
 
-        # Sidebar
+        # Sidebar for parameter configuration
         with st.sidebar:
             st.title(self.ui_title)
 
             st.subheader('LLM Settings')
 
+            # LLM selection
             selected_llm = st.sidebar.selectbox(
                 'Model', 
                 conversation_manager.LLM_BY_ID.keys(), 
@@ -67,6 +70,7 @@ class ConversationalUI:
 
             llm_param_binding = self.conversation_manager.set_llm_parameters()
             
+            # Create LLM UI controls
             for p in llm_param_binding.keys():
                 if new_llm_selected:
                     st.session_state[SESSION_KEY_LLM_UI_INPUT + p] = self.conversation_manager.llm_parameters_default[p]
@@ -100,6 +104,7 @@ class ConversationalUI:
 
             st.subheader('Interpreter Settings')
 
+            # Interpreter selection
             selected_interpreter = st.sidebar.selectbox(
                 'Interpreter',
                 conversation_manager.INTERPRETER_ID_LIST,
@@ -110,7 +115,8 @@ class ConversationalUI:
             int_param_binding = self.conversation_manager.set_interpreter_parameters()
 
             #st.subheader('Interpreter Parameters')
-                
+
+            # Create interpreter UI controls
             for p in int_param_binding.keys():
                 if p == 'Output format':
                     list = self.conversation_manager.int_parameters_default[p].copy()
@@ -127,11 +133,13 @@ class ConversationalUI:
                     else:
                         int_param_binding[p] = st.sidebar.number_input(p, key=SESSION_KEY_INT_UI_INPUT + p)
 
+            # Remove all messages
             def clear_chat_history():
                 st.session_state[SESSION_KEY_MESSAGES] = [ {ROLE: ROLE_AS, MSG: INIT_MSG, MSG_FORMAT: MSG_FORMAT_TXT} ]
 
             st.sidebar.button('Reset Conversaion', on_click=clear_chat_history)
 
+        # Display messages part of the session state
         for message in st.session_state[SESSION_KEY_MESSAGES]:
             avatar = None
             if message[ROLE] == ROLE_IN:
@@ -146,10 +154,12 @@ class ConversationalUI:
                     print("Unknown format: " + str(message.keys()))
                     st.write(message[MSG])
 
+        # Add LLM response to session state
         def append_llm_response(text_response):
             message = {ROLE: ROLE_AS, MSG: text_response, MSG_FORMAT: MSG_FORMAT_TXT}
             st.session_state[SESSION_KEY_MESSAGES].append(message)
 
+        # Add interpreter output to session state
         def append_interpreter_output(text_output=None, image_output=None):
             if text_output:
                 message = {ROLE: ROLE_IN, MSG: text_output, MSG_FORMAT: MSG_FORMAT_TXT}
@@ -158,18 +168,22 @@ class ConversationalUI:
                 message = {ROLE: ROLE_IN, MSG: image_output, MSG_FORMAT: MSG_FORMAT_IMG}
                 st.session_state[SESSION_KEY_MESSAGES].append(message)
 
+        # Add user-provided prompt to the session state
         def append_user_prompt(prompt):
             st.session_state[SESSION_KEY_MESSAGES].append({ROLE: ROLE_US, MSG: prompt, MSG_FORMAT: MSG_FORMAT_TXT})
             with st.chat_message(ROLE_US):
                 st.write(prompt)
 
+        # Execute prompt
         def run_llm(prompt):
             llm_response = ''
 
             context = st.session_state[SESSION_KEY_MESSAGES]
 
             with st.chat_message(ROLE_AS):
+                # start inference and stream response
                 with st.spinner(f"Running Inference: {selected_llm} ..."):
+                    # get reponse items and un-wrap using the provided function
                     items_wrapped = []
                     item_function = lambda item: item
                     try:
@@ -186,11 +200,13 @@ class ConversationalUI:
 
             return llm_response
 
+        # Execute interpreter
         def run_interpreter(response):
             input_syntax = self.conversation_manager.parse_llm_response(response)
 
             if input_syntax:
                 with st.chat_message(ROLE_IN):
+                    # start interpreter and add rendered response
                     placeholder = st.empty()
                     interpreter_output = None
                     with st.spinner(f"Running interpreter: {self.conversation_manager.selected_int_id} ..."):
@@ -204,6 +220,7 @@ class ConversationalUI:
                         append_interpreter_output(image_output=interpreter_output)
 
 
+        # read and run prompt
         prompt = st.chat_input() #st.chat_input(disabled=(len(api_key) < 1))
 
         if prompt:

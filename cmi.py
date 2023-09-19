@@ -1,11 +1,8 @@
-from encodings import normalize_encoding
-from os import stat
-import getopt
-import uuid
-from unittest import result
-
 import sys
+import getopt
 import streamlit as st
+from os import stat
+from unittest import result
 from streamlit.web import cli as stweb
 
 import cmi_conversation.conversational_ui as conversational_ui
@@ -58,6 +55,8 @@ def print_usage():
     sys.exit()
 
 def set_api_key(key_spec):
+    """Parses and stores API keys"""
+
     api_id_key = key_spec.split(":")
     if len(api_id_key) == 2:
         api_id = api_id_key[0]
@@ -66,55 +65,60 @@ def set_api_key(key_spec):
         api_keys[api_id] = api_key
 
 def activate_streamlit():
+    """Activates the Streamlit web UI if it has not been activated before"""
 
-    # ensure streamlit is started form the main module only and only if not active
+    # ensure streamlit is started from the main module only and only if not active
     if __name__ == '__main__' and not streamlit_activated:
         print("Activating Streamlit ...")
         user_argv = sys.argv[1:].copy()
         sys.argv = ["streamlit", "run", __file__, "--", "--streamlit-startup"] + user_argv
         sys.exit(stweb.main())
 
+
 class CMI:
+    """Conceptual Model Interpreter (CMI)"""
 
     def __init__(self):
-        self.llm_api_cl = None
-        self.rt = None
-        self.interpreter_rt = None
-        self.data_st = None
-        self.conv_ma = None
-        self.conv_ui = None
+        self.llm_api_client = None
+        self.llm_runtime = None
+        self.interpreter_runtime = None
+        self.data_store = None
+        self.conversation_manager = None
+        self.conversational_ui = None
 
 
-    def initialize_components(self):
+    def load_components(self):
+        """Load components after the initial startup"""
 
         cmi_init_message = ""
 
         cmi_init_message += "API keys found: "
         cmi_init_message += ", ".join(api_keys.keys())
 
-        if not self.conv_ui:
+        if not self.conversational_ui:
 
             # LLM Local
-            self.llm_api_cl = llm_api_client.LLMApiClient()
-            self.llm_rt = llm_runtime.LLMRuntime()
+            self.llm_api_client = llm_api_client.LLMApiClient()
+            self.llm_runtime = llm_runtime.LLMRuntime()
 
             # Interpreter
-            self.interpreter_rt = interpreter_runtime.InterpreterRuntime()
+            self.interpreter_runtime = interpreter_runtime.InterpreterRuntime()
             
             # Data Store
-            self.data_st = data_store.DataStore()
+            self.data_store = data_store.DataStore()
 
             # Conversation
-            self.conv_ma = conversation_manager.ConversationManager(api_keys, self.llm_api_cl, self.llm_rt, self.interpreter_rt, self.data_st)
+            self.conversation_manager = conversation_manager.ConversationManager(api_keys, self.llm_api_client, self.llm_runtime, self.interpreter_runtime, self.data_store)
 
             ui_title = "LLM Conceptual Model Interpreter"
-            self.conv_ui = conversational_ui.ConversationalUI(ui_port, ui_title, cmi_init_message, api_keys, self.conv_ma)
+            self.conversational_ui = conversational_ui.ConversationalUI(ui_port, ui_title, cmi_init_message, api_keys, self.conversation_manager)
 
-            self.conv_ma.set_conversational_ui(self.conv_ui)
+            self.conversation_manager.set_conversational_ui(self.conversational_ui)
 
     
 
 def parse_cli():
+    """Parse command line interface options and arguments"""
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "a:h",
@@ -138,15 +142,17 @@ def parse_cli():
             print(CMI_TITLE, CMI_VERSION)
 
 
-
 if SESSION_KEY_CMI in st.session_state:
+    # ongoing session
     cmi = st.session_state[SESSION_KEY_CMI]
 else:
+    # initial startup
     parse_cli()
     if not streamlit_activated:
         activate_streamlit()
     cmi = CMI()
     st.session_state[SESSION_KEY_CMI] = cmi
-    cmi.initialize_components()
+    cmi.load_components()
 
-cmi.conv_ui.update_web_ui()
+# update the web UI
+cmi.conversational_ui.update_web_ui()
