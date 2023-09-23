@@ -81,7 +81,7 @@ def set_webui_port(port_spec):
         print("Setting Web-UI port:", port_nr)
         ui_port = port_nr
     else:
-        print("Web-UI port format error:", port_nr)
+        print("Web-UI port format error:", port_spec)
         sys.exit(1)
 
 def activate_streamlit():
