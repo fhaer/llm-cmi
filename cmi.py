@@ -23,7 +23,7 @@ ui_port = 8501
 def print_usage():
     print(CMI_TITLE, CMI_VERSION)
     print("")
-    print("Usage: cmi.py [-h|--help] [-a|--api-key <api_id>:<api_key>]* [-p <ui_port>]")
+    print("Usage: cmi.py [-h|--help] [-a|--api-key <api_id>:<api_key>]* [-p|--port <ui_port>]")
     print("")
 
     api_id_options = " | ".join(conversation_manager.LLM_API_ID_LIST)
@@ -57,12 +57,32 @@ def print_usage():
 def set_api_key(key_spec):
     """Parses and stores API keys"""
 
+    global api_keys
+
     api_id_key = key_spec.split(":")
     if len(api_id_key) == 2:
         api_id = api_id_key[0]
         api_key = api_id_key[1]
         print("Setting API-Key:", api_id)
         api_keys[api_id] = api_key
+
+def set_webui_port(port_spec):
+    """Parses and sets the port where the web-based UI will be available"""
+
+    global ui_port
+
+    port_nr = None
+    if isinstance(port_spec, str):
+        port_nr = int(port_spec)
+    elif isinstance(port_spec, int):
+        port_nr = port_spec
+
+    if port_nr and port_nr >= 1024 and port_nr <= 65535:
+        print("Setting Web-UI port:", port_nr)
+        ui_port = port_nr
+    else:
+        print("Web-UI port format error:", port_nr)
+        sys.exit(1)
 
 def activate_streamlit():
     """Activates the Streamlit web UI if it has not been activated before"""
@@ -121,8 +141,8 @@ def parse_cli():
     """Parse command line interface options and arguments"""
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "a:h",
-            ["help", "api-key=", "streamlit-startup"])
+        opts, args = getopt.getopt(sys.argv[1:], "a:p:h",
+            ["help", "api-key=", "port=", "streamlit-startup"])
 
     except getopt.GetoptError as err:
         print(err)
@@ -133,6 +153,8 @@ def parse_cli():
     for opt, arg in opts:
         if opt in ("-a", "--api-key"):
             set_api_key(arg.strip())
+        elif opt in ("-p", "--port"):
+            set_webui_port(arg.strip())
         elif opt in ("-h", "--help"):
             print_usage()
             sys.exit()
