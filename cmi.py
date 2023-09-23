@@ -91,7 +91,7 @@ def activate_streamlit():
     if __name__ == '__main__' and not streamlit_activated:
         print("Activating Streamlit ...")
         user_argv = sys.argv[1:].copy()
-        sys.argv = ["streamlit", "run", __file__, "--", "--streamlit-startup"] + user_argv
+        sys.argv = ["streamlit", "run", __file__, "--server.port", ui_port, "--", "--streamlit-startup"] + user_argv
         sys.exit(stweb.main())
 
 
