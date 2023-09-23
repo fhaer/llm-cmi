@@ -1,7 +1,7 @@
 import sys
 import getopt
 import streamlit as st
-from os import stat
+import os
 from unittest import result
 from streamlit.web import cli as stweb
 
@@ -91,7 +91,7 @@ def activate_streamlit():
     if __name__ == '__main__' and not streamlit_activated:
         print("Activating Streamlit ...")
         user_argv = sys.argv[1:].copy()
-        sys.argv = ["streamlit", "run", __file__, "--server.port", ui_port, "--", "--streamlit-startup"] + user_argv
+        sys.argv = ["streamlit", "run", __file__, "--server.port", str(ui_port), "--", "--streamlit-startup"] + user_argv
         sys.exit(stweb.main())
 
 
