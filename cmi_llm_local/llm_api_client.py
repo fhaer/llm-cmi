@@ -94,6 +94,8 @@ class LLMApiClient:
     def run_llm_openai(self, llm_id, dialogue):
         """Run LLM with the OpenAI API"""
 
+        openai.api_key = self.api_key
+
         #print(self.llm_parameters)
         # https://platform.openai.com/docs/api-reference/chat/create
         result = openai.ChatCompletion.create(
