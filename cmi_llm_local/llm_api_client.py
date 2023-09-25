@@ -77,18 +77,17 @@ class LLMApiClient:
     def run_llm_replicate(self, llm_id, dialogue):
         """Run LLM with the replicate API"""
 
-        #print(self.llm_parameters)
         # https://replicate.com/meta/llama-2-70b-chat
-        response = replicate.run(llm_id,
-                            input={"prompt": f"{dialogue} {ROLE_AS}: ",
-                                    "temperature": self.llm_parameters["temperature"], 
-                                    "top_k": self.llm_parameters["top_k"],  
-                                    "top_p": self.llm_parameters["top_p"],  
-                                    "max_new_tokens": self.llm_parameters["max_new_tokens"], 
-                                    "min_new_tokens": self.llm_parameters["min_new_tokens"], 
-                                    "repetition_penalty": 1,
-                                    "stop_sequences": ""
-                                    })
+        api_parameters = { "prompt": f"{dialogue} {ROLE_AS}: " } #"repetition_penalty": 1, "stop_sequences": ""
+
+        # add parameters
+        for p in self.llm_parameters.keys():
+            api_parameters[p] = self.llm_parameters[p]
+
+        print(self.llm_parameters)
+        print(api_parameters)
+
+        response = replicate.run(llm_id, input=api_parameters)
         return response
 
     def run_llm_openai(self, llm_id, dialogue):
@@ -98,31 +97,42 @@ class LLMApiClient:
 
         #print(self.llm_parameters)
         # https://platform.openai.com/docs/api-reference/chat/create
-        result = openai.ChatCompletion.create(
-            model=llm_id,
-            messages=dialogue,
-            stream=True,
-            temperature=self.llm_parameters["temperature"], 
-            top_p=self.llm_parameters["top_p"],
-            # presence_penalty=0, 
-            # frequency_penalty=0
-        )
+
+        api_parameters = {
+            "model": llm_id,
+            "messages": dialogue,
+            "stream": True
+            #temperature=self.llm_parameters["temperature"], 
+            #top_p=self.llm_parameters["top_p"],
+            #presence_penalty=self.llm_parameters["presence_penalty"], 
+            #frequency_penalty=self.llm_parameters["frequency_penalty"]
+        }
+
+        # add parameters
+        for p in self.llm_parameters.keys():
+            api_parameters[p] = self.llm_parameters[p]
+
+        print(self.llm_parameters)
+        print(api_parameters)
+
+        result = openai.ChatCompletion.create(**api_parameters)
         return result
 
     # Function for generating LLaMA2 llm_response
     def request_run_llm_llama2(self, context):
         """Run the Llama 2 LLM with the provided context, including the prompt as last message, in a suitable dialogue format"""
 
-        #set_default_parameters_llama2()
         dialogue = CTX_TEMPLATE + "\\n\\n"
         for message in context:
             if MSG_FORMAT in message.keys() and ROLE in message.keys():
                 if message[MSG_FORMAT] == MSG_FORMAT_TXT:
                     role = message[ROLE]
                     if role == ROLE_US or role == ROLE_AS:
+                        # include user and assistant messages in the prompt, 
+                        # including generated code, not including interpreter output
                         dialogue += role + ": " + message[MSG] + "\\n\\n"
                     #elif role == ROLE_INT:
-                        #dialogue += ROLE_AST + ": " + message + "\\n\\n"
+                        # do not include interpreter output
 
         items = self.run_llm_replicate(self.selected_llm_api_id, dialogue)
         item_function = lambda item: item

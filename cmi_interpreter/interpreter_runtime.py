@@ -54,13 +54,20 @@ class InterpreterRuntime:
 
         int_input = input_syntax
 
-        # Set the engine for the plantweb interpreter and add directives to the code
+        # Set the engine for the plantweb interpreter, remove syntax format instructions and add directives to the code
         plantweb_int_engine = ""
+
+        # remove syntax format
+        if int_input.startswith("plantuml\n"):
+            int_input = int_input[9:]
+        if int_input.startswith("graphviz\n"):
+            int_input = int_input[9:]
+        if int_input.startswith("dot\n"):
+            int_input = int_input[4:]
+
+        # add interpreter directives
         if self.selected_interpreter == INT_PLANTWEB_PLANTUML:
             plantweb_int_engine = "plantuml"
-            # remove syntax format
-            if int_input.startswith("plantuml\n"):
-                int_input = int_input[9:]
             # add start and end directives
             if not '@startuml' in int_input:
                 int_input = '@startuml\n' + int_input
@@ -68,12 +75,6 @@ class InterpreterRuntime:
                 int_input = int_input + '\n@enduml'
         elif self.selected_interpreter == INT_PLANTWEB_GRAPHVIZ:
             plantweb_int_engine = "graphviz"
-            # remove syntax format
-            if int_input.startswith("graphviz\n"):
-                int_input = int_input[9:]
-            # remove syntax format
-            if int_input.startswith("dot\n"):
-                int_input = int_input[4:]
             # add start and end directives
             if not '@startdot' in int_input:
                 int_input = '@startdot\n' + int_input
