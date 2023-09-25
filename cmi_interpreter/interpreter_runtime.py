@@ -54,9 +54,6 @@ class InterpreterRuntime:
 
         int_input = input_syntax
 
-        # Set the engine for the plantweb interpreter, remove syntax format instructions and add directives to the code
-        plantweb_int_engine = ""
-
         # remove syntax format
         if int_input.startswith("plantuml\n"):
             int_input = int_input[9:]
@@ -65,7 +62,8 @@ class InterpreterRuntime:
         if int_input.startswith("dot\n"):
             int_input = int_input[4:]
 
-        # add interpreter directives
+        # set the engine for the plantweb interpreter and add interpreter directives
+        plantweb_int_engine = ""
         if self.selected_interpreter == INT_PLANTWEB_PLANTUML:
             plantweb_int_engine = "plantuml"
             # add start and end directives
