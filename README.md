@@ -13,9 +13,9 @@ Usage, parameters and further details:
 
 ```
 > python3 cmi.py --help
-CMI Test Environment v0.1
+MI Test Environment v0.1
 
-Usage: cmi.py [-h|--help] [-a|--api-key <api_id>:<api_key>]* [-p <ui_port>]
+Usage: cmi.py [-h|--help] [-a|--api-key <api_id>:<api_key>]* [-p|--port <ui_port>]
 
 <api_id> = OpenAI | Replicate
 
@@ -35,6 +35,8 @@ Supported LLMs:
 - Replicate/Llama2-70B
 - Replicate/Llama2-13B
 - Replicate/Llama2-7B
+- Replicate/CodeLlama-13B-Instruct
+- Replicate/Falcon-40B-Instruct
 - Llama.cpp/WizardLM-1.1-13B-GGML
 - Llama.cpp/Llama2-13B-GGML
 - Llama.cpp/OpenOrca-Platypus2-13B-GGML
