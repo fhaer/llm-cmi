@@ -84,8 +84,8 @@ class LLMApiClient:
         for p in self.llm_parameters.keys():
             api_parameters[p] = self.llm_parameters[p]
 
-        print(self.llm_parameters)
-        print(api_parameters)
+        #print(self.llm_parameters)
+        #print(api_parameters)
 
         response = replicate.run(llm_id, input=api_parameters)
         return response
@@ -93,27 +93,22 @@ class LLMApiClient:
     def run_llm_openai(self, llm_id, dialogue):
         """Run LLM with the OpenAI API"""
 
-        openai.api_key = self.api_key
-
-        #print(self.llm_parameters)
         # https://platform.openai.com/docs/api-reference/chat/create
 
         api_parameters = {
             "model": llm_id,
             "messages": dialogue,
             "stream": True
-            #temperature=self.llm_parameters["temperature"], 
-            #top_p=self.llm_parameters["top_p"],
-            #presence_penalty=self.llm_parameters["presence_penalty"], 
-            #frequency_penalty=self.llm_parameters["frequency_penalty"]
         }
 
         # add parameters
         for p in self.llm_parameters.keys():
             api_parameters[p] = self.llm_parameters[p]
 
-        print(self.llm_parameters)
-        print(api_parameters)
+        #print(self.llm_parameters)
+        #print(api_parameters)
+
+        openai.api_key = self.api_key
 
         result = openai.ChatCompletion.create(**api_parameters)
         return result
