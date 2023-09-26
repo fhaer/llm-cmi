@@ -86,12 +86,10 @@ class ConversationManager:
                 self.llm_api_client.initialize_llm(
                     self.selected_llm_id, self.selected_llm_api_id, self.llm_parameters, api_key)
                 self.data_store.create_conversation()
-                self.data_store.set_llm_configuration(self.selected_llm_id, self.llm_parameters)
             else:
                 self.llm_runtime.load_llm_files(
                     self.selected_llm_id, self.llm_parameters)
                 self.data_store.create_conversation()
-                self.data_store.set_llm_configuration(self.selected_llm_id, self.llm_parameters)
             
         return self.llm_parameters
 
@@ -127,8 +125,6 @@ class ConversationManager:
         
             self.interpreter_runtime.initialize_interpreter(self.selected_int_id, self.int_parameters)
 
-            self.data_store.set_interpreter_configuration(self.selected_int_id, self.int_parameters)
-
         return self.int_parameters
 
     def enter_prompt(self, context, prompt):
@@ -141,6 +137,7 @@ class ConversationManager:
 
         # store LLM configuration and prompt
         self.data_store.set_llm_configuration(self.selected_llm_id, self.llm_parameters)
+        self.data_store.set_interpreter_configuration(self.selected_llm_id, self.int_parameters)
         self.data_store.insert_prompt(prompt)
         
         # run prompt with an API
