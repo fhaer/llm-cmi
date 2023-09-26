@@ -13,7 +13,7 @@ Usage, parameters and further details:
 
 ```
 > python3 cmi.py --help
-MI Test Environment v0.1
+CMI Test Environment v0.1
 
 Usage: cmi.py [-h|--help] [-a|--api-key <api_id>:<api_key>]* [-p|--port <ui_port>]
 
