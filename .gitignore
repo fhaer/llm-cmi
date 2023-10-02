@@ -1,5 +1,6 @@
 __pycache__/
 venv/
+models/
 cmi-*.json
 .DS_Store
 
