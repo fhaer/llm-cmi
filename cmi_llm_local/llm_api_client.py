@@ -20,6 +20,7 @@ LLM_BY_ID = {
     API_REPLICATE + '/Llama2-70B': 'replicate/llama70b-v2-chat:e951f18578850b652510200860fc4ea62b3b16fac280f83ff32282f87bbd2e48', 
     API_REPLICATE + '/Llama2-13B': 'a16z-infra/llama13b-v2-chat:df7690f1994d94e96ad9d568eac121aecf50684a0b0963b25a41cc40061269e5', 
     API_REPLICATE + '/Llama2-7B': 'a16z-infra/llama7b-v2-chat:4f0a4744c7295c024a1de15e1a63c880d3da035fa1f49bfd344fe076074c8eea',
+    API_REPLICATE + '/Mistral-7B': 'a16z-infra/mistral-7b-instruct-v0.1:83b6a56e7c828e667f21fd596c338fd4f0039b46bcfa18d973e8e70e455fda70',
     API_REPLICATE + '/CodeLlama-13B-Instruct': 'meta/codellama-13b-instruct:be553392065353425e0f0193d2a896d6a5ff201549f5d7cd9180c8dfdeac39ed',
     API_REPLICATE + '/Falcon-40B-Instruct': 'joehoover/falcon-40b-instruct:7eb0f4b1ff770ab4f68c3a309dd4984469749b7323a3d47fd2d5e09d58836d3c'
 }
