@@ -35,6 +35,7 @@ Supported LLMs:
 - Replicate/Llama2-70B
 - Replicate/Llama2-13B
 - Replicate/Llama2-7B
+- Replicate/Mistral-7B
 - Replicate/CodeLlama-13B-Instruct
 - Replicate/Falcon-40B-Instruct
 - Llama.cpp/WizardLM-1.1-13B-GGML
