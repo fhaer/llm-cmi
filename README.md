@@ -52,3 +52,7 @@ The web-based UI will be started at port <ui_port>, default: 8501
 Example:
 
 <img src="https://raw.githubusercontent.com/fhaer/llm-cmi/master/cmi-graphviz.png" width="100%" />
+
+#### Related Publication
+
+Härer, Felix (2023): Conceptual Model Interpreter for Large Language Models, accepted for: ER Forum 2023, 42nd International Conference on Conceptual Modeling (ER 2023), November 6-9, 2023, Lisbon, PT. 
