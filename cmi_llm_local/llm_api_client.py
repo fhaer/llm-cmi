@@ -22,9 +22,20 @@ LLM_API_ENDPOINT_DEFAULTS = {
 }
 
 LLM_BY_ID = {
+    API_OLLAMA + '/Llama2': 'llama2',
+    API_OLLAMA + '/Llama2-70B-Chat': 'llama2:70b-chat',
+    API_OLLAMA + '/Mistral': 'mistral',
     API_OLLAMA + '/Openhermes-2.5-Mistral': 'openhermes2.5-mistral',
+    API_OLLAMA + '/Stable-Beluga': 'stable-beluga',
+    API_OLLAMA + '/Stable-Beluga-70B': 'stable-beluga:70b',
+    API_OLLAMA + '/Vicuna': 'vicuna',
+    API_OLLAMA + '/Vicuna-33B': 'vicuna:33b',
+    API_OLLAMA + '/Wizard-Math': 'wizard-math',
+    API_OLLAMA + '/Wizard-Math-70B': 'wizard-math:70b',
+    API_OLLAMA + '/Yi': 'yi',
     API_OLLAMA + '/Yi-34B': 'yi:34b',
     API_OLLAMA + '/Yi-34B-Q4_K_M': 'yi:34b-q4_K_M',
+    API_OLLAMA + '/Zephyr': 'zephyr',
     API_OPENAPI + '/gpt-4': 'gpt-4',
     API_OPENAPI + '/gpt-3.5-turbo': 'gpt-3.5-turbo',
     API_OPENAPI + '/gpt-3.5-turbo-16k': 'gpt-3.5-turbo-16k',
