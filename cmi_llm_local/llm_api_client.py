@@ -25,7 +25,7 @@ LLM_BY_ID = {
     API_OLLAMA + '/Llama2': 'llama2',
     API_OLLAMA + '/Llama2-70B-Chat': 'llama2:70b-chat',
     API_OLLAMA + '/Mistral': 'mistral',
-    API_OLLAMA + '/Openhermes-2.5-Mistral': 'openhermes2.5-mistral',
+    API_OLLAMA + '/OpenHermes-2.5-Mistral': 'openhermes2.5-mistral',
     API_OLLAMA + '/Stable-Beluga': 'stable-beluga',
     API_OLLAMA + '/Stable-Beluga-70B': 'stable-beluga:70b',
     API_OLLAMA + '/Vicuna': 'vicuna',
@@ -245,13 +245,12 @@ class LLMApiClient:
 
             try:
                 jsonr = json.loads(response_text)
+                if 'context' in jsonr:
+                    self.llm_returned_context = jsonr['context']
                 if 'response' in jsonr:
                     return jsonr['response']
                 if 'error' in jsonr:
                     return "LLM API returned error: {}".format(jsonr['error'])
-                if 'context' in jsonr:
-                    self.llm_returned_context = jsonr['context']
-                    return ''
             except json.decoder.JSONDecodeError:
                 return ''
 
@@ -265,6 +264,7 @@ class LLMApiClient:
             self.llm_response_ongoing = True
             self.llm_response_buffer.append(response_last)
             return ''
+
         return ''
 
 
