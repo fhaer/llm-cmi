@@ -16,7 +16,7 @@ LLM_API_IDS = [
      API_OPENAPI, API_REPLICATE, API_OLLAMA
 ]
 
-LLM_API_ENDPOINT = {
+LLM_API_ENDPOINT_DEFAULTS = {
     API_OLLAMA: 'http://127.0.0.1:11434/api/generate'
     # OpenAPI and Replicate endpoints are set by libraries
 }
@@ -81,7 +81,7 @@ class LLMApiClient:
         print("Load LLM API client ...")
 
 
-    def initialize_llm(self, selected_llm, selected_llm_api_id, llm_parameters, api_key):
+    def initialize_llm(self, selected_llm, selected_llm_api_id, llm_parameters, api_key, api_endpoint):
         """Sets LLM and parameters with API keys"""
 
         print("Initialize LLM API client ...")
@@ -98,6 +98,12 @@ class LLMApiClient:
         self.selected_llm_api_id = selected_llm_api_id
 
         self.llm_parameters = llm_parameters
+
+        # Set API endpoint
+        if selected_llm.startswith(API_OLLAMA) and api_endpoint:
+            self.api_endpoint = api_endpoint
+        elif selected_llm.startswith(API_OLLAMA):
+            self.api_endpoint = LLM_API_ENDPOINT_DEFAULTS[API_OLLAMA]
 
         # Context returned by some APIs
         self.llm_returned_context = []
@@ -164,7 +170,7 @@ class LLMApiClient:
         for p in self.llm_parameters.keys():
             api_parameters['options'][p] = self.llm_parameters[p]
 
-        response = requests.post(LLM_API_ENDPOINT[API_OLLAMA], json=api_parameters, stream=True)
+        response = requests.post(self.api_endpoint, json=api_parameters, stream=True)
         return response
 
     # Function for generating LLaMA2 llm_response
@@ -214,7 +220,7 @@ class LLMApiClient:
 
         # Check if the response is complete or still ongoing
         response_last = response.decode('utf-8')
-        if response_last.endswith('}\n' or response_last.endswith('}')):
+        if response_last.endswith('}\n') or response_last.endswith('}'):
             # response is complete
             response_text = ""
             for response_buffered in self.llm_response_buffer:
@@ -226,11 +232,13 @@ class LLMApiClient:
 
             try:
                 jsonr = json.loads(response_text)
+                if 'response' in jsonr:
+                    return jsonr['response']
+                if 'error' in jsonr:
+                    return "LLM API returned error: {}".format(jsonr['error'])
                 if 'context' in jsonr:
                     self.llm_returned_context = jsonr['context']
                     return ''
-                if 'response' in jsonr:
-                    return jsonr['response']
             except json.decoder.JSONDecodeError:
                 return ''
 

@@ -15,9 +15,10 @@ INTERPRETER_ID_LIST = interpreter_runtime.INTERPRETER_IDS
 class ConversationManager:
     """Manages the selected LLM and interpreter with parameters"""
 
-    def __init__(self, api_keys, llm_api_client, llm_runtime, interpreter_runtime, data_store):
+    def __init__(self, api_keys, api_endpoints, llm_api_client, llm_runtime, interpreter_runtime, data_store):
         print("Load Conversation Manager ...")
         self.api_keys = api_keys
+        self.api_endpoints = api_endpoints
         self.llm_api_client = llm_api_client
         self.llm_runtime = llm_runtime
         self.interpreter_runtime = interpreter_runtime
@@ -71,20 +72,23 @@ class ConversationManager:
                     self.llm_parameters = llm_runtime.PARAMETER_DEFAULTS[rt_id].copy()
                     break
 
-            # get API key
+            # get API parameters
             api_key = ""
+            api_endpoint = ""
             api_selected = False
             for api_id in LLM_API_ID_LIST:
                 if self.selected_llm_id.startswith(api_id):
                     api_selected = True
                     if api_id in self.api_keys.keys():
                         api_key = self.api_keys[api_id]
+                    if api_id in self.api_endpoints.keys():
+                        api_endpoint = self.api_endpoints[api_id]
                     break
 
             # initialize LLM API or runtime
             if api_selected:
                 self.llm_api_client.initialize_llm(
-                    self.selected_llm_id, self.selected_llm_api_id, self.llm_parameters, api_key)
+                    self.selected_llm_id, self.selected_llm_api_id, self.llm_parameters, api_key, api_endpoint)
                 self.data_store.create_conversation()
             else:
                 self.llm_runtime.load_llm_files(

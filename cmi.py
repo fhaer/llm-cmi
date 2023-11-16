@@ -18,12 +18,13 @@ SESSION_KEY_CMI = "CMI"
 
 streamlit_activated = False
 api_keys = {}
+api_endpoints = {}
 ui_port = 8501
 
 def print_usage():
     print(CMI_TITLE, CMI_VERSION)
     print("")
-    print("Usage: cmi.py [-h|--help] [-a|--api-key <api_id>:<api_key>]* [-p|--port <ui_port>]")
+    print("Usage: cmi.py [-h|--help] [-a|--api <api_id>:<api_key>[:api_endpoint]]* [-p|--port <ui_port>]")
     print("")
 
     api_id_options = " | ".join(conversation_manager.LLM_API_ID_LIST)
@@ -50,21 +51,34 @@ def print_usage():
         print("-", llm_id)
     print("")
 
+    print("Example Usage:")
+    print("- Run with API keys for OpenAI and Replicate:")
+    print("  cmi.py -a OpenAI:INSERT_KEY -a Replicate:INSERT_KEY")
+    print("- Run with a local Ollama endpoint:")
+    print("  cmi.py -a Ollama::'http://127.0.0.1:11434/api/generate'")
+    print("")
+
     print("The web-based UI will be started at port <ui_port>, default:", ui_port)
     print("")
     sys.exit()
 
-def set_api_key(key_spec):
-    """Parses and stores API keys"""
+def set_api_parameters(parameter_spec):
+    """Parses and stores API parameters"""
 
     global api_keys
 
-    api_id_key = key_spec.split(":")
-    if len(api_id_key) == 2:
-        api_id = api_id_key[0]
-        api_key = api_id_key[1]
+    api_id_parameter = parameter_spec.split(":", 2)
+    if len(api_id_parameter) >= 2:
+        api_id = api_id_parameter[0]
+        api_key = api_id_parameter[1]
         print("Setting API-Key:", api_id)
         api_keys[api_id] = api_key
+        if len(api_id_parameter) >= 3:
+            api_endpoint = api_id_parameter[2]
+            api_endpoint = api_endpoint.lstrip("\'")
+            api_endpoint = api_endpoint.rstrip("\'")
+            print("Setting API-Endpoint:", api_endpoint)
+            api_endpoints[api_id] = api_endpoint
 
 def set_webui_port(port_spec):
     """Parses and sets the port where the web-based UI will be available"""
@@ -128,7 +142,7 @@ class CMI:
             self.data_store = data_store.DataStore()
 
             # Conversation
-            self.conversation_manager = conversation_manager.ConversationManager(api_keys, self.llm_api_client, self.llm_runtime, self.interpreter_runtime, self.data_store)
+            self.conversation_manager = conversation_manager.ConversationManager(api_keys, api_endpoints, self.llm_api_client, self.llm_runtime, self.interpreter_runtime, self.data_store)
 
             ui_title = "LLM Conceptual Model Interpreter"
             self.conversational_ui = conversational_ui.ConversationalUI(ui_port, ui_title, cmi_init_message, api_keys, self.conversation_manager)
@@ -142,7 +156,7 @@ def parse_cli():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "a:p:h",
-            ["help", "api-key=", "port=", "streamlit-startup"])
+            ["help", "api=", "port=", "streamlit-startup"])
 
     except getopt.GetoptError as err:
         print(err)
@@ -151,8 +165,8 @@ def parse_cli():
     global streamlit_activated
         
     for opt, arg in opts:
-        if opt in ("-a", "--api-key"):
-            set_api_key(arg.strip())
+        if opt in ("-a", "--api"):
+            set_api_parameters(arg.strip())
         elif opt in ("-p", "--port"):
             set_webui_port(arg.strip())
         elif opt in ("-h", "--help"):
