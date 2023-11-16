@@ -7,6 +7,7 @@ from streamlit.web import cli as stweb
 import cmi_conversation.conversation_manager as conversation_manager
 
 SESSION_KEY_MESSAGES = "messages/"
+SESSION_KEY_CONTEXT_IDS = "context_ids/"
 
 SESSION_KEY_LLM_UI_INPUT = "ui/input/llm/"
 SESSION_KEY_INT_UI_INPUT = "ui/input/int/"
@@ -136,6 +137,7 @@ class ConversationalUI:
             # Remove all messages
             def clear_chat_history():
                 st.session_state[SESSION_KEY_MESSAGES] = [ {ROLE: ROLE_AS, MSG: INIT_MSG, MSG_FORMAT: MSG_FORMAT_TXT} ]
+                self.conversation_manager.clear_chat_history()
 
             st.sidebar.button('Reset Conversaion', on_click=clear_chat_history)
 

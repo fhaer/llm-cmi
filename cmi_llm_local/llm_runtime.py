@@ -44,6 +44,7 @@ class LLMRuntime:
         self.llm_parameters = None
         self.llm_files = None
         self.llama_cpp = None
+        self.llm_returned_context = []
 
     def load_llm_files(self, selected_llm, llm_parameters):
         """Load LLM files and initialize with runtime"""
@@ -90,3 +91,5 @@ class LLMRuntime:
         (items_wrapped, item_function) = self.run_llm_llama_cpp(prompt)
         return (items_wrapped, item_function)
 
+    def clear_history(self):
+        self.llm_returned_context = []

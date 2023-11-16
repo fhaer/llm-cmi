@@ -146,7 +146,7 @@ class ConversationManager:
 
                 print("LLM parameters:", self.llm_parameters)
                 print("Interpreter parameters:", self.int_parameters)
-                (items_wrapped, item_function) = self.llm_api_client.request_run_prompt(context)
+                (items_wrapped, item_function) = self.llm_api_client.request_run_prompt(context, prompt)
                 break
 
         # run prompt with a runtime
@@ -171,12 +171,17 @@ class ConversationManager:
 
         if not input_syntax:
             self.data_store.insert_llm_response(llm_response)
-            int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH[self.selected_int_id], llm_response, flags=re.DOTALL)
+            int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_BLOCK[self.selected_int_id], llm_response, flags=re.DOTALL)
             if int_syntax_match_code:
                 output = int_syntax_match_code.group(1)
-            #else:
-                # try to find any code block
-                #int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_BLOCK, llm_response, flags=re.DOTALL)
+            else:
+                # try to find concrete syntax
+                int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH[self.selected_int_id], llm_response, flags=re.DOTALL)
+                if int_syntax_match_code:
+                    output = int_syntax_match_code.group(1)
+                #else:
+                # try to find any code word
+                #int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_WORD, llm_response, flags=re.DOTALL)
                 #if int_syntax_match_code:
                 #    output = int_syntax_match_code.group(1)
             
@@ -189,4 +194,7 @@ class ConversationManager:
                 self.data_store.insert_interpreter_output(output)
         
         return output
-            
+
+    def clear_chat_history(self):
+        self.llm_api_client.clear_history()
+        self.llm_runtime.clear_history()

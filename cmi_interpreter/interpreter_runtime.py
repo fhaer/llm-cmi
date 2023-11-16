@@ -29,12 +29,18 @@ PARAMETER_DEFAULTS = {
 }
 
 SYNTAX_MATCH = {
+    INT_PLANTWEB_PLANTUML: r'@startuml(.*?)@enduml',
+    INT_PLANTWEB_GRAPHVIZ: r'(strict)? (di.?)?graph.*?\{.*\}',
+    INT_PLANTWEB_DITAA: r'```(.*?)```'
+}
+
+SYNTAX_MATCH_CODE_BLOCK = {
     INT_PLANTWEB_PLANTUML: r'```(.*?)```', #'@startuml(.*?)@enduml',
     INT_PLANTWEB_GRAPHVIZ: r'```(.*?)```', #r'(strict)? (di.?)?graph.*?\{.*\}',
     INT_PLANTWEB_DITAA: r'```(.*?)```'
 }
 
-SYNTAX_MATCH_CODE_BLOCK = r'`(.*?)`'
+SYNTAX_MATCH_CODE_WORD= r'`(.*?)`'
 
 class InterpreterRuntime:
     """Runs a supported interpreter based on the output of a LLM and returns a rendering of the result"""
