@@ -23,6 +23,8 @@ LLM_API_ENDPOINT_DEFAULTS = {
 
 LLM_BY_ID = {
     API_OLLAMA + '/Openhermes-2.5-Mistral': 'openhermes2.5-mistral',
+    API_OLLAMA + '/Yi-34B': 'yi:34b',
+    API_OLLAMA + '/Yi-34B-Q4_K_M': 'yi:34b-q4_K_M',
     API_OPENAPI + '/gpt-4': 'gpt-4',
     API_OPENAPI + '/gpt-3.5-turbo': 'gpt-3.5-turbo',
     API_OPENAPI + '/gpt-3.5-turbo-16k': 'gpt-3.5-turbo-16k',
