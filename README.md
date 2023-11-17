@@ -28,10 +28,12 @@ Supported LLM API clients:
 - Ollama
 
 Supported LLMs:
-- Ollama/Llama2
-- Ollama/Llama2-70B-Chat
+- Ollama/Neural-Chat
+- Ollama/OpenChat
 - Ollama/Mistral
 - Ollama/OpenHermes-2.5-Mistral
+- Ollama/Llama2
+- Ollama/Llama2-70B-Chat
 - Ollama/Stable-Beluga
 - Ollama/Stable-Beluga-70B
 - Ollama/Vicuna
@@ -66,8 +68,8 @@ Supported Interpreters:
 Example Usage:
 - Run with API keys for OpenAI and Replicate:
   cmi.py -a OpenAI:INSERT_KEY -a Replicate:INSERT_KEY
-- Run with a local Ollama endpoint:
-  cmi.py -a Ollama::'http://127.0.0.1:11434/api/generate'
+- Run with a specific Ollama endpoint:
+  cmi.py -a Ollama::'http://INSERT_HOST:INSERT_PORT/api/generate'
 
 The web-based UI will be started at port <ui_port>, default: 8501
 ```
