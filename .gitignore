@@ -6,3 +6,4 @@ cmi-*.json
 .DS_Store
 .vscode/
 start-*.sh
+prompts*

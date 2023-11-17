@@ -22,10 +22,12 @@ LLM_API_ENDPOINT_DEFAULTS = {
 }
 
 LLM_BY_ID = {
-    API_OLLAMA + '/Llama2': 'llama2',
-    API_OLLAMA + '/Llama2-70B-Chat': 'llama2:70b-chat',
+    API_OLLAMA + '/Neural-Chat': 'neural-chat',
+    API_OLLAMA + '/OpenChat': 'openchat',
     API_OLLAMA + '/Mistral': 'mistral',
     API_OLLAMA + '/OpenHermes-2.5-Mistral': 'openhermes2.5-mistral',
+    API_OLLAMA + '/Llama2': 'llama2',
+    API_OLLAMA + '/Llama2-70B-Chat': 'llama2:70b-chat',
     API_OLLAMA + '/Stable-Beluga': 'stable-beluga',
     API_OLLAMA + '/Stable-Beluga-70B': 'stable-beluga:70b',
     API_OLLAMA + '/Vicuna': 'vicuna',
@@ -74,6 +76,36 @@ PARAMETER_DEFAULTS = {
         "temperature": 0.2,
         "top_p": 0.9,
         "top_k": 50
+        #"num_keep": 5,
+        #"seed": 42,
+        #"num_predict": 100,
+        #"tfs_z": 0.5,
+        #"typical_p": 0.7,
+        #"repeat_last_n": 33,
+        #"repeat_penalty": 1.2,
+        #"presence_penalty": 1.5,
+        #"frequency_penalty": 1.0,
+        #"mirostat": 1,
+        #"mirostat_tau": 0.8,
+        #"mirostat_eta": 0.6,
+        #"penalize_newline": true,
+        #"stop": ["\n", "user:"],
+        #"numa": false,
+        #"num_ctx": 4,
+        #"num_batch": 2,
+        #"num_gqa": 1,
+        #"num_gpu": 1,
+        #"main_gpu": 0,
+        #"low_vram": false,
+        #"f16_kv": true,
+        #"logits_all": false,
+        #"vocab_only": false,
+        #"use_mmap": true,
+        #"use_mlock": false,
+        #"embedding_only": false,
+        #"rope_frequency_base": 1.1,
+        #"rope_frequency_scale": 0.8,
+        #"num_thread": 8
     }
 }
 
@@ -239,12 +271,15 @@ class LLMApiClient:
             for response_buffered in self.llm_response_buffer:
                 response_text += response_buffered
             response_text += response_last
-            
+
             self.llm_response_ongoing = False
             self.llm_response_buffer = []
 
             try:
                 jsonr = json.loads(response_text)
+                for k in ['prompt_eval_duration', 'eval_duration']:
+                    if k in jsonr:
+                        print("{}: {}".format(k, jsonr[k]))
                 if 'context' in jsonr:
                     self.llm_returned_context = jsonr['context']
                 if 'response' in jsonr:
