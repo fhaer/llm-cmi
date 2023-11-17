@@ -1,7 +1,7 @@
 llama-cpp-python==0.1.78
 streamlit==1.26.0
 replicate
-openai
+openai==0.28
 requests
 plantweb
 
