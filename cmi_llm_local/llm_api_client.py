@@ -22,7 +22,7 @@ LLM_API_ENDPOINT_DEFAULTS = {
 }
 
 LLM_BY_ID = {
-    API_OLLAMA + '/Orac2-13B': 'orca2:13b',
+    API_OLLAMA + '/Orca2-13B': 'orca2:13b',
     API_OLLAMA + '/Neural-Chat': 'neural-chat',
     API_OLLAMA + '/OpenChat': 'openchat',
     API_OLLAMA + '/Mistral': 'mistral',
