@@ -22,6 +22,10 @@ LLM_API_ENDPOINT_DEFAULTS = {
 }
 
 LLM_BY_ID = {
+    API_OLLAMA + '/Mixtral-8x7B-Instruct-v0.1-q5_K_M': 'mixtral:8x7b-instruct-v0.1-q5_K_M',
+    API_OLLAMA + '/Starling-lm-7B-alpha-q5_0': 'starling-lm:7b-alpha-q5_0',
+    API_OLLAMA + '/Meditron-70B-q4_1': 'meditron:70b-q4_1',
+    API_OLLAMA + '/Meditron-70B-q5_1': 'meditron:70b-q5_1',
     API_OLLAMA + '/Orca2-13B': 'orca2:13b',
     API_OLLAMA + '/Neural-Chat': 'neural-chat',
     API_OLLAMA + '/OpenChat': 'openchat',
@@ -43,6 +47,7 @@ LLM_BY_ID = {
     API_OPENAPI + '/gpt-3.5-turbo': 'gpt-3.5-turbo',
     API_OPENAPI + '/gpt-3.5-turbo-16k': 'gpt-3.5-turbo-16k',
     API_OPENAPI + '/gpt-3.5-turbo-instruct': 'gpt-3.5-turbo-instruct',
+    API_REPLICATE + '/Mixtral-8x7B': 'nateraw/mixtral-8x7b-32kseqlen:db11a6311e4ce1fc6b3904d944f6052b17dcd1236ea976690e4943c4e807cd9b',
     API_REPLICATE + '/Llama2-70B-Chat': 'replicate/llama-2-70b-chat:2796ee9483c3fd7aa2e171d38f4ca12251a30609463dcfd4cd76703f22e96cdf',
     API_REPLICATE + '/Llama2-70B': 'replicate/llama70b-v2-chat:e951f18578850b652510200860fc4ea62b3b16fac280f83ff32282f87bbd2e48', 
     API_REPLICATE + '/Llama2-13B': 'a16z-infra/llama13b-v2-chat:df7690f1994d94e96ad9d568eac121aecf50684a0b0963b25a41cc40061269e5', 
