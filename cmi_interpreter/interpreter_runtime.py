@@ -30,7 +30,7 @@ PARAMETER_DEFAULTS = {
 
 SYNTAX_MATCH = {
     INT_PLANTWEB_PLANTUML: r'@startuml(.*?)@enduml',
-    INT_PLANTWEB_GRAPHVIZ: r'(strict)? (di.?)?graph.*?\{.*\}',
+    INT_PLANTWEB_GRAPHVIZ: r'(d?i?\S?graph\s[\w+]\s*\{.*\}).*?$',
     INT_PLANTWEB_DITAA: r'```(.*?)```'
 }
 
@@ -92,6 +92,7 @@ class InterpreterRuntime:
         plantweb_use_cache = self.int_parameters['Use cache']
         
         # Execute interpreter
+        print("Interpreter Input:\n", int_input, sep="")
         result = render(
             int_input,
             engine=plantweb_int_engine,
