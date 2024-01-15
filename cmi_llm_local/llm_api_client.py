@@ -16,13 +16,14 @@ LLM_API_IDS = [
      API_OPENAPI, API_REPLICATE, API_OLLAMA
 ]
 
-LLM_API_ENDPOINT_DEFAULTS = {
+LLM_API_ENDPOINT_DEFAULTS = {#
+    # Default Ollama API Endpoint (may be overwritten by commandline option)
     API_OLLAMA: 'http://127.0.0.1:11434/api/generate'
     # OpenAPI and Replicate endpoints are set by libraries
 }
 
 LLM_BY_ID = {
-    API_OLLAMA + '/Mixtral-8x7B-Instruct-v0.1-q5_K_M': 'mixtral:8x7b-instruct-v0.1-q5_K_M',
+    API_OLLAMA + '/Mixtral-8x7B-Instruct (v0.1-q5_K_M)': 'mixtral:8x7b-instruct-v0.1-q5_K_M',
     API_OLLAMA + '/Starling-lm-7B-alpha-q5_0': 'starling-lm:7b-alpha-q5_0',
     API_OLLAMA + '/Meditron-70B-q4_1': 'meditron:70b-q4_1',
     API_OLLAMA + '/Meditron-70B-q5_1': 'meditron:70b-q5_1',

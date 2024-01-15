@@ -175,12 +175,13 @@ class ConversationManager:
 
         if not input_syntax:
             self.data_store.insert_llm_response(llm_response)
-            int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_BLOCK[self.selected_int_id], llm_response, flags=re.DOTALL)
+            int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH[self.selected_int_id], llm_response, flags=re.DOTALL)
+            # try to find conrete syntax
             if int_syntax_match_code:
                 output = int_syntax_match_code.group(1)
             else:
-                # try to find concrete syntax
-                int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH[self.selected_int_id], llm_response, flags=re.DOTALL)
+                # try to find any syntax in a code block
+                int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_BLOCK[self.selected_int_id], llm_response, flags=re.DOTALL)
                 if int_syntax_match_code:
                     output = int_syntax_match_code.group(1)
                 #else:
