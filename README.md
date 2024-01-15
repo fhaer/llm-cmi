@@ -28,35 +28,27 @@ Supported LLM API clients:
 - Ollama
 
 Supported LLMs:
-- Ollama/Neural-Chat
-- Ollama/OpenChat
-- Ollama/Mistral
-- Ollama/OpenHermes-2.5-Mistral
-- Ollama/Llama2
-- Ollama/Llama2-70B-Chat
-- Ollama/Stable-Beluga
-- Ollama/Stable-Beluga-70B
-- Ollama/Vicuna
-- Ollama/Vicuna-33B
-- Ollama/Wizard-Math
-- Ollama/Wizard-Math-70B
-- Ollama/Yi
-- Ollama/Yi-34B
-- Ollama/Yi-34B-Q4_K_M
-- Ollama/Zephyr
+- Ollama/Mistral-7B-Instruct (v0.2-q5_K_M)
+- Ollama/Mixtral-8x7B-Instruct (v0.1-q5_K_M)
+- Ollama/Neural-Chat-7B (v3.3-q5_K_M)
+- Ollama/OpenChat-7B (v3.5-1210-q5_K_M)
+- Ollama/OpenHermes-7B (v2.5-q5_K_M)
+- Ollama/Starling-lm-7B (alpha-q5_K_M)
+- Ollama/Zephyr-7B (beta-q5_K_M)
+- Ollama/Vicuna-33B (v1.5-q5_K_M)
+- Ollama/Yi-34B-Chat (q5_K_M)
+- Ollama/Llama2-70B-Chat (q5_K_M)
+- Ollama/Meditron-70B (q5_1)
 - OpenAI/gpt-4
 - OpenAI/gpt-3.5-turbo
 - OpenAI/gpt-3.5-turbo-16k
 - OpenAI/gpt-3.5-turbo-instruct
-- Replicate/Llama2-70B-Chat
-- Replicate/Llama2-70B
-- Replicate/Llama2-13B
-- Replicate/Llama2-7B
 - Replicate/Mistral-7B-Instruct
+- Replicate/Mixtral-8x7B-Instruct
 - Replicate/CodeLlama-34B-Instruct-GGUF
 - Replicate/WizardCoder-Python-34B
-- Replicate/CodeLlama-13B-Instruct
 - Replicate/Falcon-40B-Instruct
+- Replicate/Llama2-70B-Chat
 - Llama.cpp/WizardLM-1.1-13B-GGML
 - Llama.cpp/Llama2-13B-GGML
 - Llama.cpp/OpenOrca-Platypus2-13B-GGML
