@@ -49,9 +49,9 @@ Supported LLMs:
 - Replicate/WizardCoder-Python-34B
 - Replicate/Falcon-40B-Instruct
 - Replicate/Llama2-70B-Chat
-- Llama.cpp/WizardLM-1.1-13B-GGML
 - Llama.cpp/Llama2-13B-GGML
 - Llama.cpp/OpenOrca-Platypus2-13B-GGML
+- Llama.cpp/WizardLM-1.1-13B-GGML
 
 Supported Interpreters:
 - Plantweb/PlantUML
