@@ -9,7 +9,6 @@ LLM_RUNTIME_IDS = [
 ]
 
 LLM_BY_ID = {
-    RUNTIME_LLAMA_CPP + '/Llama2-13B-GGML': 'models/llama-2-13b-chat.ggmlv3.q5_K_M.bin',
     RUNTIME_LLAMA_CPP + '/OpenOrca-Platypus2-13B-GGML': 'models/openorca-platypus2-13b.ggmlv3.q5_K_M.bin',
     RUNTIME_LLAMA_CPP + '/WizardLM-1.1-13B-GGML': 'models/wizardlm-13b-v1.1.ggmlv3.q4_1.bin',
 }
