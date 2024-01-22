@@ -7,7 +7,7 @@ Note: The prototype is only intended as a feasibility demonstration.
 Requirements: 
 - Python 3.11 with the packages listed in requirements.txt
 - API keys for OpenAI and/or Replicate set with the "-a" option shown below
-- For local inference, llama.cpp is required and LLM files need to be present in a subdirectory "models"
+- For local inference, Ollama or llama.cpp is required
 
 Usage, parameters and further details:
 
