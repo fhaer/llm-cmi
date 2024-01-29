@@ -70,6 +70,13 @@ Example:
 
 <img src="https://raw.githubusercontent.com/fhaer/llm-cmi/master/cmi-graphviz.png" width="100%" />
 
+Using with Docker:
+
+```sh
+docker build -t llm-cli .
+docker run -p 8501:8501 -t llm-cmi python3 cmi.py -a <api_id>:<api_key>:<url>
+```
+
 #### Related Publication
 
 Härer, Felix (2023): Conceptual Model Interpreter for Large Language Models, accepted for: ER Forum 2023, 42nd International Conference on Conceptual Modeling (ER 2023), November 6-9, 2023, Lisbon, PT. 
