@@ -6,11 +6,13 @@ import cmi_llm_local.llm_api_client as llm_api_client
 import cmi_llm_local.llm_runtime as llm_runtime
 import cmi_interpreter.interpreter_runtime as interpreter_runtime
 
+API_ID_LIST = llm_api_client.LLM_API_IDS + interpreter_runtime.INT_API_IDS
+INT_API_ID_LIST = interpreter_runtime.INT_API_IDS
 LLM_API_ID_LIST = llm_api_client.LLM_API_IDS
 LLM_RUNTIME_ID_LIST = llm_runtime.LLM_RUNTIME_IDS
 LLM_BY_ID = llm_api_client.LLM_BY_ID | llm_runtime.LLM_BY_ID
 
-INTERPRETER_ID_LIST = interpreter_runtime.INTERPRETER_IDS
+INT_ID_LIST = interpreter_runtime.INT_IDS
 
 class ConversationManager:
     """Manages the selected LLM and interpreter with parameters"""
@@ -121,13 +123,26 @@ class ConversationManager:
 
         if not self.int_parameters:
             # set default values depending on the interpreter
-            for int_id in INTERPRETER_ID_LIST:
+            for int_id in INT_ID_LIST:
                 if self.selected_int_id.startswith(int_id):
                     self.int_parameters = interpreter_runtime.PARAMETER_DEFAULTS[int_id].copy()
                     self.int_parameters_default = interpreter_runtime.PARAMETER_DEFAULTS[int_id].copy()
                     break
-        
-            self.interpreter_runtime.initialize_interpreter(self.selected_int_id, self.int_parameters)
+
+            # get API parameters
+            api_key = ""
+            api_endpoint = ""
+            api_selected = False
+            for api_id in INT_API_ID_LIST:
+                if self.selected_int_id.startswith(api_id):
+                    api_selected = True
+                    if api_id in self.api_keys.keys():
+                        api_key = self.api_keys[api_id]
+                    if api_id in self.api_endpoints.keys():
+                        api_endpoint = self.api_endpoints[api_id]
+                    break
+
+            self.interpreter_runtime.initialize_interpreter(self.selected_int_id, self.int_parameters, api_key, api_endpoint)
 
         return self.int_parameters
 

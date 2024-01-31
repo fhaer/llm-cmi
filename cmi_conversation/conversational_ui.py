@@ -108,7 +108,7 @@ class ConversationalUI:
             # Interpreter selection
             selected_interpreter = st.sidebar.selectbox(
                 'Interpreter',
-                conversation_manager.INTERPRETER_ID_LIST,
+                conversation_manager.INT_ID_LIST,
                 key='selected_interpreter')
 
             new_interpreter_selected = self.conversation_manager.select_interpreter(selected_interpreter)

@@ -27,7 +27,7 @@ def print_usage():
     print("Usage: cmi.py [-h|--help] [-a|--api <api_id>:<api_key>[:api_endpoint]]* [-p|--port <ui_port>]")
     print("")
 
-    api_id_options = " | ".join(conversation_manager.LLM_API_ID_LIST)
+    api_id_options = " | ".join(conversation_manager.API_ID_LIST)
     print("<api_id> =", api_id_options)
     print("")
     
@@ -47,7 +47,7 @@ def print_usage():
     print("")
     
     print("Supported Interpreters:")
-    for llm_id in conversation_manager.INTERPRETER_ID_LIST:
+    for llm_id in conversation_manager.INT_ID_LIST:
         print("-", llm_id)
     print("")
 
@@ -56,6 +56,8 @@ def print_usage():
     print("  cmi.py -a OpenAI:INSERT_KEY -a Replicate:INSERT_KEY")
     print("- Run with a local Ollama endpoint:")
     print("  cmi.py -a Ollama::'http://127.0.0.1:11434/api/generate'")
+    print("- Run with a local BPMN-Auto-Layout endpoint:")
+    print("  cmi.py -a BPMN-Auto-Layout::'http://127.0.0.1:3000/process-diagram'")
     print("")
 
     print("The web-based UI will be started at port <ui_port>, default:", ui_port)
@@ -126,7 +128,7 @@ class CMI:
 
         cmi_init_message = ""
 
-        cmi_init_message += "API keys found: "
+        cmi_init_message += "API endpoints: "
         cmi_init_message += ", ".join(api_keys.keys())
 
         if not self.conversational_ui:
