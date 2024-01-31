@@ -17,7 +17,7 @@ CMI Test Environment v0.1
 
 Usage: cmi.py [-h|--help] [-a|--api <api_id>:<api_key>[:api_endpoint]]* [-p|--port <ui_port>]
 
-<api_id> = OpenAI | Replicate | Ollama
+<api_id> = OpenAI | Replicate | Ollama | BPMN-Auto-Layout
 
 Supported local LLM runtime:
 - Llama.cpp
@@ -49,19 +49,21 @@ Supported LLMs:
 - Replicate/WizardCoder-Python-34B
 - Replicate/Falcon-40B-Instruct
 - Replicate/Llama2-70B-Chat
-- Llama.cpp/Llama2-13B-GGML
 - Llama.cpp/OpenOrca-Platypus2-13B-GGML
 - Llama.cpp/WizardLM-1.1-13B-GGML
 
 Supported Interpreters:
+- BPMN-Auto-Layout/BPMN-XML
 - Plantweb/PlantUML
 - Plantweb/Graphviz
 
 Example Usage:
 - Run with API keys for OpenAI and Replicate:
   cmi.py -a OpenAI:INSERT_KEY -a Replicate:INSERT_KEY
-- Run with a specific Ollama endpoint:
-  cmi.py -a Ollama::'http://INSERT_HOST:INSERT_PORT/api/generate'
+- Run with a local Ollama endpoint:
+  cmi.py -a Ollama::'http://127.0.0.1:11434/api/generate'
+- Run with a local BPMN-Auto-Layout endpoint:
+  cmi.py -a BPMN-Auto-Layout::'http://127.0.0.1:3000/process-diagram'
 
 The web-based UI will be started at port <ui_port>, default: 8501
 ```
