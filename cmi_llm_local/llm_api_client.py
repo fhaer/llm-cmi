@@ -23,6 +23,7 @@ LLM_API_ENDPOINT_DEFAULTS = {#
 }
 
 LLM_BY_ID = {
+    API_OLLAMA + '/Mistral-7B-Instruct (latest)': 'mistral:latest',
     API_OLLAMA + '/Mistral-7B-Instruct (v0.2-q5_K_M)': 'mistral:7b-instruct-q5_K_M',
     API_OLLAMA + '/Mixtral-8x7B-Instruct (v0.1-q5_K_M)': 'mixtral:8x7b-instruct-v0.1-q5_K_M',
     API_OLLAMA + '/Neural-Chat-7B (v3.3-q5_K_M)': 'neural-chat:7b-v3.3-q5_K_M',

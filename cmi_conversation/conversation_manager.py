@@ -185,6 +185,15 @@ class ConversationManager:
         If an LLM response contains concrete syntax, it is parsed and returned. If an input syntax is 
         given for the interpreter, the interpreter is run and the result is returned.
         """
+        
+        bpmn_test_file = "test.bpmn"
+        bpmn_syntax_test = ""
+        if os.path.isfile(bpmn_test_file):
+            with open(bpmn_test_file, "r") as file:
+                bpmn_syntax_test = file.read()
+                print("Loaded BPMN test syntax:")
+                print(bpmn_syntax_test)
+                llm_response += "\n" + bpmn_syntax_test
 
         output = None
 
