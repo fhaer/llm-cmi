@@ -36,6 +36,7 @@ Supported LLMs:
 - Ollama/OpenHermes-7B (v2.5-q5_K_M)
 - Ollama/Starling-lm-7B (alpha-q5_K_M)
 - Ollama/Yi-34B-Chat (q5_K_M)
+- Ollama/Vicuna-33B (v1.5-q5_K_M)
 - Ollama/Zephyr-7B (beta-q5_K_M)
 - OpenAI/gpt-4
 - OpenAI/gpt-3.5-turbo
