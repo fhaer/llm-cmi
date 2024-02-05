@@ -23,18 +23,16 @@ LLM_API_ENDPOINT_DEFAULTS = {#
 }
 
 LLM_BY_ID = {
-    API_OLLAMA + '/Mistral-7B-Instruct (latest)': 'mistral:latest',
+    API_OLLAMA + '/Llama2-70B-Chat (q5_K_M)': 'llama2:70b-chat-q5_K_M',
     API_OLLAMA + '/Mistral-7B-Instruct (v0.2-q5_K_M)': 'mistral:7b-instruct-q5_K_M',
     API_OLLAMA + '/Mixtral-8x7B-Instruct (v0.1-q5_K_M)': 'mixtral:8x7b-instruct-v0.1-q5_K_M',
     API_OLLAMA + '/Neural-Chat-7B (v3.3-q5_K_M)': 'neural-chat:7b-v3.3-q5_K_M',
     API_OLLAMA + '/OpenChat-7B (v3.5-1210-q5_K_M)': 'openchat:7b-v3.5-1210-q5_K_M',
     API_OLLAMA + '/OpenHermes-7B (v2.5-q5_K_M)': 'openhermes:7b-mistral-v2.5-q5_K_M',
     API_OLLAMA + '/Starling-lm-7B (alpha-q5_K_M)': 'starling-lm:7b-alpha-q5_K_M',
-    API_OLLAMA + '/Zephyr-7B (beta-q5_K_M)': 'zephyr:7b-beta-q5_K_M',
     API_OLLAMA + '/Vicuna-33B (v1.5-q5_K_M)': 'vicuna:13b-v1.5-16k-q5_K_M',
     API_OLLAMA + '/Yi-34B-Chat (q5_K_M)': 'yi:34b-chat-q5_K_M',
-    API_OLLAMA + '/Llama2-70B-Chat (q5_K_M)': 'llama2:70b-chat-q5_K_M',
-    API_OLLAMA + '/Meditron-70B (q5_1)': 'meditron:70b-q5_1',
+    API_OLLAMA + '/Zephyr-7B (beta-q5_K_M)': 'zephyr:7b-beta-q5_K_M',
     #API_OLLAMA + '/Orca2-13B': 'orca2:13b',
     #API_OLLAMA + '/Stable-Beluga-70B': 'stable-beluga:70b',
     #API_OLLAMA + '/Wizard-Math-70B': 'wizard-math:70b',

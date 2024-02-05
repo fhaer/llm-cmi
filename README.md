@@ -28,17 +28,15 @@ Supported LLM API clients:
 - Ollama
 
 Supported LLMs:
+- Ollama/Llama2-70B-Chat (q5_K_M)
 - Ollama/Mistral-7B-Instruct (v0.2-q5_K_M)
 - Ollama/Mixtral-8x7B-Instruct (v0.1-q5_K_M)
 - Ollama/Neural-Chat-7B (v3.3-q5_K_M)
 - Ollama/OpenChat-7B (v3.5-1210-q5_K_M)
 - Ollama/OpenHermes-7B (v2.5-q5_K_M)
 - Ollama/Starling-lm-7B (alpha-q5_K_M)
-- Ollama/Zephyr-7B (beta-q5_K_M)
-- Ollama/Vicuna-33B (v1.5-q5_K_M)
 - Ollama/Yi-34B-Chat (q5_K_M)
-- Ollama/Llama2-70B-Chat (q5_K_M)
-- Ollama/Meditron-70B (q5_1)
+- Ollama/Zephyr-7B (beta-q5_K_M)
 - OpenAI/gpt-4
 - OpenAI/gpt-3.5-turbo
 - OpenAI/gpt-3.5-turbo-16k
