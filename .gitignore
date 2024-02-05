@@ -7,3 +7,4 @@ cmi-*.json
 .vscode/
 start-*.sh
 prompts*
+test*
