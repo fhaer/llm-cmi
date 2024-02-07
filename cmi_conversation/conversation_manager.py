@@ -1,6 +1,7 @@
 import sys
 import os
 import re
+from time import perf_counter_ns
 
 import cmi_llm_local.llm_api_client as llm_api_client
 import cmi_llm_local.llm_runtime as llm_runtime
@@ -49,6 +50,7 @@ class ConversationManager:
             print("Reset LLM parameters")
             self.llm_parameters = None
             self.llm_parameters_default = None
+            self.file_upload = None
             return True
 
         return False
@@ -156,7 +158,7 @@ class ConversationManager:
 
         # store LLM configuration and prompt
         self.data_store.set_llm_configuration(self.selected_llm_id, self.llm_parameters)
-        self.data_store.set_interpreter_configuration(self.selected_llm_id, self.int_parameters)
+        self.data_store.set_interpreter_configuration(self.selected_int_id, self.int_parameters)
         self.data_store.insert_prompt(prompt)
         
         # run prompt with an API
@@ -165,6 +167,7 @@ class ConversationManager:
 
                 print("LLM parameters:", self.llm_parameters)
                 print("Interpreter parameters:", self.int_parameters)
+                t_start = perf_counter_ns()
                 (items_wrapped, item_function) = self.llm_api_client.request_run_prompt(context, prompt)
                 break
 
@@ -177,53 +180,66 @@ class ConversationManager:
                 (items_wrapped, item_function) = self.llm_runtime.run_prompt(context)
                 break
         
-        return (items_wrapped, item_function)
+        return (items_wrapped, item_function, t_start)
 
-    def parse_llm_response(self, llm_response, input_syntax=None):
+    def process_llm_response(self, llm_response, execution_duration):
         """
-        Parses an LLM response and, if a supported concrete syntax is found, starts the interpreter.
-        If an LLM response contains concrete syntax, it is parsed and returned. If an input syntax is 
-        given for the interpreter, the interpreter is run and the result is returned.
+        Parses an LLM response. If an LLM response contains concrete syntax, it is parsed and returned, otherwise None. 
         """
         
-        bpmn_test_file = "test.bpmn"
-        bpmn_syntax_test = ""
-        if os.path.isfile(bpmn_test_file):
-            with open(bpmn_test_file, "r") as file:
-                bpmn_syntax_test = file.read()
-                print("Loaded BPMN test syntax:")
-                print(bpmn_syntax_test)
-                llm_response += "\n" + bpmn_syntax_test
+        output = None
+
+        self.data_store.insert_llm_response(llm_response, execution_duration)
+        int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH[self.selected_int_id], llm_response, flags=re.DOTALL)
+        # try to find conrete syntax
+        if int_syntax_match_code:
+            output = int_syntax_match_code.group(1)
+        else:
+            # try to find any syntax in a code block
+            int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_BLOCK[self.selected_int_id], llm_response, flags=re.DOTALL)
+            if int_syntax_match_code:
+                output = int_syntax_match_code.group(1)
+            #else:
+            # try to find any code word
+            #int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_WORD, llm_response, flags=re.DOTALL)
+            #if int_syntax_match_code:
+            #    output = int_syntax_match_code.group(1)
+        
+        return output
+
+    def execute_interpreter(self, input_syntax):
+        """
+        Starts the interpreter and returns the result and execution time.
+        """
+        
+        #bpmn_test_file = "test.bpmn"
+        #bpmn_syntax_test = ""
+        #if os.path.isfile(bpmn_test_file):
+        #    with open(bpmn_test_file, "r") as file:
+        #        bpmn_syntax_test = file.read()
+        #        print("Loaded BPMN test syntax")
+        #        llm_response += "\n" + bpmn_syntax_test
 
         output = None
 
-        if not input_syntax:
-            self.data_store.insert_llm_response(llm_response)
-            int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH[self.selected_int_id], llm_response, flags=re.DOTALL)
-            # try to find conrete syntax
-            if int_syntax_match_code:
-                output = int_syntax_match_code.group(1)
-            else:
-                # try to find any syntax in a code block
-                int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_BLOCK[self.selected_int_id], llm_response, flags=re.DOTALL)
-                if int_syntax_match_code:
-                    output = int_syntax_match_code.group(1)
-                #else:
-                # try to find any code word
-                #int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_WORD, llm_response, flags=re.DOTALL)
-                #if int_syntax_match_code:
-                #    output = int_syntax_match_code.group(1)
-            
-        else:
-            interpreter_output = self.interpreter_runtime.run_syntax(input_syntax)
-            if interpreter_output:
-                #self.conversational_ui.append_interpreter_output(image_output=interpreter_output)
-                output = interpreter_output
-                self.data_store.set_interpreter_configuration(self.selected_int_id, self.int_parameters)
-                self.data_store.insert_interpreter_output(output)
+        self.data_store.set_interpreter_configuration(self.selected_int_id, self.int_parameters)
+        self.data_store.insert_interpreter_input(input_syntax)
+        t_start = perf_counter_ns()
+        interpreter_output = self.interpreter_runtime.run_syntax(input_syntax)
+        t_stop = perf_counter_ns()
+        execution_duration = (t_stop-t_start)
+        print("Interpreter total execution duration [ns]:", execution_duration)
+        if interpreter_output:
+            #self.conversational_ui.append_interpreter_output(image_output=interpreter_output)
+            output = interpreter_output
+            self.data_store.insert_interpreter_output(output, execution_duration)
         
         return output
 
     def clear_chat_history(self):
-        self.llm_api_client.clear_history()
-        self.llm_runtime.clear_history()
+        self.llm_api_client.clear_returned_context()
+        self.llm_runtime.clear_returned_context()
+
+    def remove_last_message(self):
+        self.llm_api_client.clear_returned_context()
+        self.llm_runtime.clear_returned_context()

@@ -37,10 +37,10 @@ PARAMETER_DEFAULTS = {
 }
 INT_API_ENDPOINT_DEFAULTS = {#
     # Default API Endpoints (may be overwritten by commandline options)
-    INT_BPMN: 'http://172.17.0.1:3000/process-diagram',
-    INT_PLANTWEB_PLANTUML: 'http://172.17.0.1:3001',
-    INT_PLANTWEB_GRAPHVIZ: 'http://172.17.0.1:3002',
-    INT_PLANTWEB_DITAA: 'http://172.17.0.1:3003'
+    INT_BPMN: '',
+    INT_PLANTWEB_PLANTUML: '',
+    INT_PLANTWEB_GRAPHVIZ: '',
+    INT_PLANTWEB_DITAA: ''
 }
 
 SYNTAX_MATCH = {
@@ -80,7 +80,7 @@ class InterpreterRuntime:
             print("Endpoint", selected_int, api_endpoint)
             self.api_endpoint = api_endpoint
 
-    def execute_plantweb(int_input, plantweb_int_engine, plantweb_output_format, plantweb_use_cache):
+    def execute_plantweb(self, int_input, plantweb_int_engine, plantweb_output_format, plantweb_use_cache):
         """Run Plantweb interpreter with the given API"""
 
         print("Interpreter Input:\n", int_input, sep="")
@@ -100,22 +100,23 @@ class InterpreterRuntime:
 
         print("Interpreter Input:\n", int_input, sep="")
 
-        data = int_input.encode('utf-8')
-        headers = {'Content-Type': 'text/plain'}
-        #auth=('apikey', self.apikey)
+        result = None
 
-        response = requests.post(self.api_endpoint, data=data, headers=headers)
+        if self.api_endpoint:
+            #auth=('apikey', self.apikey)
+            data = int_input.encode('utf-8')
+            headers = {'Content-Type': 'text/plain'}
+            response = requests.post(self.api_endpoint, data=data, headers=headers)
 
-        # https://github.com/MaxVidgof/bpmn-auto-layout
-        # response contians JSON data: with keys layoutedDiagramXML and svg
-        
-        response_data = response.json()
+            # https://github.com/MaxVidgof/bpmn-auto-layout
+            # response contians JSON data: with keys layoutedDiagramXML and svg
+            
+            response_data = response.json()
 
-        result = ["", "svg"]
-        if 'svg' in response_data.keys():
-            result = [ response_data['svg'], "svg" ]
-        #if 'layoutedDiagramXML' in response_data.keys():
-        #    result = [ response_data['layoutedDiagramXML'], "svg" ]
+            if 'svg' in response_data.keys():
+                result = [ response_data['svg'], "svg" ]
+            #if 'layoutedDiagramXML' in response_data.keys():
+            #    result = [ response_data['layoutedDiagramXML'], "svg" ]
 
         return result
 
@@ -174,9 +175,9 @@ class InterpreterRuntime:
         result_format = None
 
         # Result output in text or image formats
-        if len(result) > 0:
+        if result and len(result) > 0:
             result_output = result[0]
-        if len(result) > 1:
+        if result and len(result) > 1:
             result_format = result[1]
 
         # Decode SVG output using UTF-8

@@ -90,5 +90,5 @@ class LLMRuntime:
         (items_wrapped, item_function) = self.run_llm_llama_cpp(prompt)
         return (items_wrapped, item_function)
 
-    def clear_history(self):
+    def clear_returned_context(self):
         self.llm_returned_context = []

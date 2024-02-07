@@ -276,7 +276,7 @@ class LLMApiClient:
                 if 'response' in jsonr:
                     return jsonr['response']
                 if 'error' in jsonr:
-                    return "LLM API returned error: {}".format(jsonr['error'])
+                    return "*LLM API returned error: {}*".format(jsonr['error'])
             except json.decoder.JSONDecodeError:
                 return ''
 
@@ -321,7 +321,7 @@ class LLMApiClient:
         return (items, item_function)
 
     def request_run_prompt(self, context, prompt):
-        """Runs the provided prompt or context, which includes the prompt as last message """
+        """Runs the provided prompt or a context that includes the prompt as last message"""
 
         if self.selected_llm.startswith(API_REPLICATE + '/Llama2'):
             return self.request_run_llm_llama2(context)
@@ -332,5 +332,5 @@ class LLMApiClient:
         elif self.selected_llm.startswith(API_OLLAMA):
             return self.request_run_llm_ollama(prompt)
 
-    def clear_history(self):
+    def clear_returned_context(self):
         self.llm_returned_context = []
