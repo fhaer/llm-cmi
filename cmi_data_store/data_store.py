@@ -113,6 +113,19 @@ class DataStore:
         with open(os.path.join(self.directory, filename), 'w') as f:
             f.write(output)
 
+    def reset_configuration(self, init_message):
+        """Reset the LLM configuration LLM and interpreter."""
+        
+        if self.message_id == 0:
+            # new conversation starting
+            self.create_conversation(init_message)
+        else: 
+            # parameter change in ongoing conversation
+            self.last_llm = ""
+            self.last_llm_config = ""
+            self.last_int = ""
+            self.last_int_config = ""
+
     def create_conversation(self, init_message):
         """Create a new JSON file with current timestamp for storing a new conversation."""
         

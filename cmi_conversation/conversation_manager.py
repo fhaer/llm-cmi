@@ -70,11 +70,11 @@ class ConversationManager:
         if api_selected:
             self.llm_api_client.initialize_llm(
                 self.selected_llm_id, self.selected_llm_api_id, self.llm_parameters, api_key, api_endpoint)
-            self.data_store.create_conversation(init_message)
+            self.data_store.reset_configuration(init_message)
         else:
             self.llm_runtime.load_llm_files(
                 self.selected_llm_id, self.llm_parameters)
-            self.data_store.create_conversation(init_message)
+            self.data_store.reset_configuration(init_message)
 
     def set_llm_parameters(self, init_message):
         """
