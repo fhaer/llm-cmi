@@ -18,6 +18,8 @@ PROMPT = "user_prompt"
 RESPONSE = "llm_response"
 INT_INPUT = "int_input"
 INT_OUTPUT = "int_output"
+MESSAGE = "message"
+INIT_MESSAGE = "init_message"
 EXEC_DURATION_S = "execution_duration_s"
 
 MESSAGE_ID = "message_id"
@@ -36,6 +38,8 @@ class DataStore:
         self.directory = None
         self.log_file = None
         self.timestamp = None
+        self.conversation_id = ""
+        self.init_message = ""
         self.message_id = 0
         self.last_llm = ""
         self.last_llm_config = ""
@@ -109,8 +113,16 @@ class DataStore:
         with open(os.path.join(self.directory, filename), 'w') as f:
             f.write(output)
 
-    def create_conversation(self):
+    def create_conversation(self, init_message):
         """Create a new JSON file with current timestamp for storing a new conversation."""
+        
+        self.init_message = init_message
+
+        self.message_id = 0
+        self.last_llm = ""
+        self.last_llm_config = ""
+        self.last_int = ""
+        self.last_int_config = ""
 
         self.conversation_id = "cmi-" + self.get_timestamp()
 
@@ -151,8 +163,21 @@ class DataStore:
 
             self.write_log_file(INT_CONFIG_LIST, c)
 
+    def insert_init_message(self):
+
+        c = {
+            TIMESTAMP: int(time.time()),
+            MESSAGE_ID: self.message_id, 
+            INIT_MESSAGE: self.init_message
+        }
+
+        self.write_log_file(CONVERSATION, c)
+
     def insert_prompt(self, prompt):
         """Store a user-provided prompt as part of the current conversaion"""
+
+        if self.message_id == 0:
+            self.insert_init_message()
 
         self.message_id += 1
         
@@ -173,8 +198,8 @@ class DataStore:
         c = {
             TIMESTAMP: int(time.time()),
             MESSAGE_ID: self.message_id,
-            EXEC_DURATION_S: execution_duration_ns/1e+10,
-            RESPONSE: response
+            EXEC_DURATION_S: execution_duration_ns/1e+9,
+            RESPONSE: response.strip()
         }
 
         self.write_log_file(CONVERSATION, c)
@@ -206,3 +231,15 @@ class DataStore:
 
         self.write_log_file(CONVERSATION, c)
         self.write_interpreter_output(self.message_id, output)
+
+    def insert_message(self, message):
+        """Stores an arbitrary message"""
+
+        self.message_id += 1
+        c = {
+            TIMESTAMP: int(time.time()),
+            MESSAGE_ID: self.message_id, 
+            MESSAGE: message
+        }
+
+        self.write_log_file(CONVERSATION, c)

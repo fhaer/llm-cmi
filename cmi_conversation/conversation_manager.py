@@ -64,7 +64,19 @@ class ConversationManager:
             self.conversational_ui.set_available_models(self.available_models)
             self.available_models_loaded = True
 
-    def set_llm_parameters(self):
+    def initialize_llm(self, init_message, api_selected, api_key, api_endpoint):
+        """Initialize LLM API or runtime"""
+
+        if api_selected:
+            self.llm_api_client.initialize_llm(
+                self.selected_llm_id, self.selected_llm_api_id, self.llm_parameters, api_key, api_endpoint)
+            self.data_store.create_conversation(init_message)
+        else:
+            self.llm_runtime.load_llm_files(
+                self.selected_llm_id, self.llm_parameters)
+            self.data_store.create_conversation(init_message)
+
+    def set_llm_parameters(self, init_message):
         """
         Sets initial LLM parameters and initializes a LLM API or a local runtime. 
         Returns parameters as parameter binding to be connected to, e.g., UI controls.
@@ -98,15 +110,7 @@ class ConversationManager:
                         api_endpoint = self.api_endpoints[api_id]
                     break
 
-            # initialize LLM API or runtime
-            if api_selected:
-                self.llm_api_client.initialize_llm(
-                    self.selected_llm_id, self.selected_llm_api_id, self.llm_parameters, api_key, api_endpoint)
-                self.data_store.create_conversation()
-            else:
-                self.llm_runtime.load_llm_files(
-                    self.selected_llm_id, self.llm_parameters)
-                self.data_store.create_conversation()
+            self.initialize_llm(init_message, api_selected, api_key, api_endpoint)
             
         return self.llm_parameters
 
@@ -245,10 +249,12 @@ class ConversationManager:
         
         return output
 
-    def clear_chat_history(self):
+    def clear_chat_history(self, init_message):
         self.llm_api_client.clear_returned_context()
         self.llm_runtime.clear_returned_context()
+        self.data_store.create_conversation(init_message)
 
     def remove_last_message(self):
         self.llm_api_client.clear_returned_context()
         self.llm_runtime.clear_returned_context()
+        self.data_store.insert_message("Last message removed")

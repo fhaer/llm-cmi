@@ -74,11 +74,11 @@ class ConversationalUI:
         # Remove all messages
         def clear_chat_history():
             st.session_state[SESSION_KEY_MESSAGES] = [ {ROLE: ROLE_AS, MSG: INIT_MSG, MSG_FORMAT: MSG_FORMAT_TXT} ]
-            self.conversation_manager.clear_chat_history()
+            self.conversation_manager.clear_chat_history(INIT_MSG)
 
         # Enables displaying the file uploader in the chat
-        def remove_last_user_message():
-            # remove responses
+        def remove_last_prompt_and_response():
+            # remove response (from LLM, interpreter)
             while len(st.session_state[SESSION_KEY_MESSAGES]) > 0 and st.session_state[SESSION_KEY_MESSAGES][-1][ROLE] != ROLE_US:
                 st.session_state[SESSION_KEY_MESSAGES] = st.session_state[SESSION_KEY_MESSAGES][0:-1]
                 self.conversation_manager.remove_last_message()
@@ -233,7 +233,7 @@ class ConversationalUI:
 
             #st.subheader('LLM Parameters')
 
-            llm_param_binding = self.conversation_manager.set_llm_parameters()
+            llm_param_binding = self.conversation_manager.set_llm_parameters(INIT_MSG)
             
             # Create LLM UI controls
             for p in llm_param_binding.keys():
@@ -331,7 +331,7 @@ class ConversationalUI:
 
             st.subheader('Conversation Context')
             st.sidebar.button('Start new conversation', on_click=clear_chat_history, use_container_width=True)
-            st.sidebar.button('Remove last message', on_click=remove_last_user_message, use_container_width=True)
+            st.sidebar.button('Remove last message', on_click=remove_last_prompt_and_response, use_container_width=True)
 
             # end of sidebar context
 
