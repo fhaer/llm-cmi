@@ -31,31 +31,28 @@ def print_usage():
     print("<api_id> =", api_id_options)
     print("")
     
-    print("Supported local LLM runtime:")
-    for rt_id in conversation_manager.LLM_RUNTIME_ID_LIST:
-        print("-", rt_id)
-    print("")
-
-    print("Supported LLM API clients:")
+    print("Supported LLM APIs:")
     for api_id in conversation_manager.LLM_API_ID_LIST:
         print("-", api_id)
     print("")
 
-    print("Supported LLMs:")
-    for llm_id in conversation_manager.LLM_BY_ID.keys():
-        print("-", llm_id)
-    print("")
-    
-    print("Supported Interpreters:")
+    print("Supported Interpreter APIs:")
     for llm_id in conversation_manager.INT_ID_LIST:
         print("-", llm_id)
     print("")
 
+    print("Known LLMs:")
+    for llm_id in conversation_manager.LLM_BY_ID_PRECONFIGURED:
+        print("-", llm_id)
+    print()
+    print("Note: When specifying an Ollama endpoint, available models will be requested form the API at runtime.")
+    print("")
+    
     print("Example Usage:")
     print("- Run with API keys for OpenAI and Replicate:")
     print("  cmi.py -a OpenAI:INSERT_KEY -a Replicate:INSERT_KEY")
     print("- Run with a local Ollama endpoint:")
-    print("  cmi.py -a Ollama::'http://127.0.0.1:11434/api/generate'")
+    print("  cmi.py -a Ollama::'http://127.0.0.1:11434/api'")
     print("- Run with a local BPMN-Auto-Layout endpoint:")
     print("  cmi.py -a BPMN-Auto-Layout::'http://127.0.0.1:3000/process-diagram'")
     print("")
@@ -191,6 +188,7 @@ else:
     cmi = CMI()
     st.session_state[SESSION_KEY_CMI] = cmi
     cmi.load_components()
+    cmi.conversation_manager.set_available_models()
 
 # update the web UI
 cmi.conversational_ui.update_web_ui()

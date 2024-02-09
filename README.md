@@ -19,48 +19,47 @@ Usage: cmi.py [-h|--help] [-a|--api <api_id>:<api_key>[:api_endpoint]]* [-p|--po
 
 <api_id> = OpenAI | Replicate | Ollama | BPMN-Auto-Layout
 
-Supported local LLM runtime:
-- Llama.cpp
-
-Supported LLM API clients:
+Supported LLM APIs:
 - OpenAI
 - Replicate
 - Ollama
 
-Supported LLMs:
-- Ollama/Llama2-70B-Chat (q5_K_M)
-- Ollama/Mistral-7B-Instruct (v0.2-q5_K_M)
-- Ollama/Mixtral-8x7B-Instruct (v0.1-q5_K_M)
-- Ollama/Neural-Chat-7B (v3.3-q5_K_M)
-- Ollama/OpenChat-7B (v3.5-1210-q5_K_M)
-- Ollama/OpenHermes-7B (v2.5-q5_K_M)
-- Ollama/Starling-lm-7B (alpha-q5_K_M)
-- Ollama/Yi-34B-Chat (q5_K_M)
-- Ollama/Vicuna-33B (v1.5-q5_K_M)
-- Ollama/Zephyr-7B (beta-q5_K_M)
-- OpenAI/gpt-4
-- OpenAI/gpt-3.5-turbo
-- OpenAI/gpt-3.5-turbo-16k
-- OpenAI/gpt-3.5-turbo-instruct
-- Replicate/Mistral-7B-Instruct
-- Replicate/Mixtral-8x7B-Instruct
-- Replicate/CodeLlama-34B-Instruct-GGUF
-- Replicate/WizardCoder-Python-34B
-- Replicate/Falcon-40B-Instruct
-- Replicate/Llama2-70B-Chat
-- Llama.cpp/OpenOrca-Platypus2-13B-GGML
-- Llama.cpp/WizardLM-1.1-13B-GGML
-
-Supported Interpreters:
+Supported Interpreter APIs:
 - BPMN-Auto-Layout/BPMN-XML
 - Plantweb/PlantUML
 - Plantweb/Graphviz
+
+Known LLMs:
+- Ollama/Llama2 (70b-chat-q5_k_m, 69B, Q5_K_M, 2e12d2211dd5)
+- Ollama/Mistral (7b-instruct-q5_k_m, 7B, Q5_K_M, 8397c99c426f)
+- Ollama/Mixtral (8x7b-instruct-v0.1-q5_k_m, 47B, Q5_K_M, 58b4d0644efd)
+- Ollama/Neural-chat (7b-v3.3-q5_k_m, 7B, Q5_K_M, 6e7f6242bbec)
+- Ollama/Openchat (7b-v3.5-1210-q5_k_m, 7B, Q5_K_M, 64e4cb9bb506)
+- Ollama/Openhermes (7b-mistral-v2.5-q5_k_m, 7B, Q5_K_M, 16eab97b0cd1)
+- Ollama/Orca2 (13b-q5_k_m, 13B, Q5_K_M, d5e443067226)
+- Ollama/Phi (2.7b-chat-v2-q5_k_m, 3B, Q5_K_M, 4dbc1775ae76)
+- Ollama/Qwen (14b-chat-v1.5-q5_k_m, 14B, Q5_K_M, ba0e61d66b27)
+- Ollama/Qwen (72b-chat-v1.5-q5_k_m, 72B, Q5_K_M, 13a773260811)
+- Ollama/Solar (10.7b-instruct-v1-q5_k_m, 11B, Q5_K_M, ef538f3193f7)
+- Ollama/Stable-beluga (13b-q5_k_m, 13B, Q5_K_M, 72350608e9fc)
+- Ollama/Stablelm2 (1.6b-zephyr-q4_k_m, 2B, Q4_K_M, 2f41c2ec1f16)
+- Ollama/Yi (34b-chat-q5_k_m, 34B, Q5_K_M, 56f40aebe6c6)
+- OpenAI/gpt-4-0125-preview
+- OpenAI/gpt-4-1106-preview
+- OpenAI/gpt-4-0613
+- OpenAI/gpt-3.5-turbo-0125
+- OpenAI/gpt-3.5-turbo-1106
+- Replicate/Mistral-7B-Instruct v0.2 79052a3adbba
+- Replicate/Mixtral-8x7B-Instruct v0.1 7b3212fbaf88
+- Replicate/Llama2-70B-Chat 02e509c78996
+
+Note: When specifying an Ollama endpoint, available models will be requested form the API at runtime.
 
 Example Usage:
 - Run with API keys for OpenAI and Replicate:
   cmi.py -a OpenAI:INSERT_KEY -a Replicate:INSERT_KEY
 - Run with a local Ollama endpoint:
-  cmi.py -a Ollama::'http://127.0.0.1:11434/api/generate'
+  cmi.py -a Ollama::'http://127.0.0.1:11434/api'
 - Run with a local BPMN-Auto-Layout endpoint:
   cmi.py -a BPMN-Auto-Layout::'http://127.0.0.1:3000/process-diagram'
 

@@ -11,8 +11,7 @@ API_ID_LIST = llm_api_client.LLM_API_IDS + interpreter_runtime.INT_API_IDS
 INT_API_ID_LIST = interpreter_runtime.INT_API_IDS
 LLM_API_ID_LIST = llm_api_client.LLM_API_IDS
 LLM_RUNTIME_ID_LIST = llm_runtime.LLM_RUNTIME_IDS
-LLM_BY_ID = llm_api_client.LLM_BY_ID | llm_runtime.LLM_BY_ID
-
+LLM_BY_ID_PRECONFIGURED = llm_api_client.LLM_BY_ID | llm_runtime.LLM_BY_ID
 INT_ID_LIST = interpreter_runtime.INT_IDS
 
 class ConversationManager:
@@ -22,6 +21,7 @@ class ConversationManager:
         print("Load Conversation Manager ...")
         self.api_keys = api_keys
         self.api_endpoints = api_endpoints
+        self.available_models_loaded = False
         self.llm_api_client = llm_api_client
         self.llm_runtime = llm_runtime
         self.interpreter_runtime = interpreter_runtime
@@ -46,7 +46,7 @@ class ConversationManager:
         if not self.selected_llm_id or self.selected_llm_id != selected_llm_id:
             print("Selected LLM:", selected_llm_id)
             self.selected_llm_id = selected_llm_id
-            self.selected_llm_api_id = LLM_BY_ID[selected_llm_id]
+            self.selected_llm_api_id = self.available_models[selected_llm_id]
             print("Reset LLM parameters")
             self.llm_parameters = None
             self.llm_parameters_default = None
@@ -54,6 +54,15 @@ class ConversationManager:
             return True
 
         return False
+
+    def set_available_models(self):
+        """Sets available models from each API that is enabled by setting an API key or endpoint"""
+
+        if not self.available_models_loaded:
+            self.llm_api_client.query_available_models(self.api_keys, self.api_endpoints)
+            self.available_models = llm_api_client.LLM_BY_ID | llm_runtime.LLM_BY_ID
+            self.conversational_ui.set_available_models(self.available_models)
+            self.available_models_loaded = True
 
     def set_llm_parameters(self):
         """

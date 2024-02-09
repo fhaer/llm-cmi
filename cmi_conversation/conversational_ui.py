@@ -48,8 +48,12 @@ class ConversationalUI:
         self.api_keys = api_keys
         self.conversation_manager = conversation_manager
 
+    def set_available_models(self, models):
+        self.available_models = models
+
     def trigger_update(self, message):
-        st.info(message)
+        st.toast(message)
+        st.experimental_rerun()
 
     def update_web_ui(self):
         """Updates the web UI with selectable LLMs, interpreters, current parameters, and messages of the conversation"""
@@ -144,7 +148,7 @@ class ConversationalUI:
                 message = {ROLE: ROLE_IN, MSG: text_output, MSG_FORMAT: MSG_FORMAT_TXT}
                 st.session_state[SESSION_KEY_MESSAGES].append(message)
             if image_output:
-                print(image_output)
+                #print(image_output)
                 message = {ROLE: ROLE_IN, MSG: image_output, MSG_FORMAT: MSG_FORMAT_IMG}
                 st.session_state[SESSION_KEY_MESSAGES].append(message)
 
@@ -222,7 +226,7 @@ class ConversationalUI:
             # LLM selection
             selected_llm = st.sidebar.selectbox(
                 'Model', 
-                conversation_manager.LLM_BY_ID.keys(), 
+                sorted(self.available_models.keys()), 
                 key='selected_llm')
             
             new_llm_selected = self.conversation_manager.select_llm(selected_llm)
