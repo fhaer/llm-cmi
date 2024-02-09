@@ -246,6 +246,8 @@ class ConversationManager:
             #self.conversational_ui.append_interpreter_output(image_output=interpreter_output)
             output = interpreter_output
             self.data_store.insert_interpreter_output(output, execution_duration)
+        else:
+            self.data_store.insert_interpreter_output("no output", execution_duration)
         
         return output
 
