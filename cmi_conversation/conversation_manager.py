@@ -156,7 +156,7 @@ class ConversationManager:
                     if api_id in self.api_endpoints.keys():
                         api_endpoint = self.api_endpoints[api_id]
                     break
-
+            
             self.interpreter_runtime.initialize_interpreter(self.selected_int_id, self.int_parameters, api_key, api_endpoint)
 
         return self.int_parameters

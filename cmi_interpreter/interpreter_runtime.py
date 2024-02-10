@@ -6,20 +6,20 @@ from plantweb.render import render, render_file
 INT_BPMN = "BPMN-Auto-Layout"
 INT_PLANTWEB = "Plantweb"
 
-INT_BPMN = INT_BPMN + "/BPMN-XML"
+INT_BPMN_XML = INT_BPMN + "/BPMN-XML"
 INT_PLANTWEB_PLANTUML = INT_PLANTWEB + "/PlantUML"
 INT_PLANTWEB_GRAPHVIZ = INT_PLANTWEB + "/Graphviz"
 INT_PLANTWEB_DITAA = INT_PLANTWEB + "/DITAA"
 
 INT_IDS = [
-    INT_BPMN, INT_PLANTWEB_PLANTUML, INT_PLANTWEB_GRAPHVIZ
+    INT_BPMN_XML, INT_PLANTWEB_PLANTUML, INT_PLANTWEB_GRAPHVIZ
 ]
 INT_API_IDS = [
     INT_BPMN
 ]
 
 PARAMETER_DEFAULTS = {
-    INT_BPMN: {
+    INT_BPMN_XML: {
         'Output format': ['SVG']
     },
     INT_PLANTWEB_PLANTUML: {
@@ -37,21 +37,21 @@ PARAMETER_DEFAULTS = {
 }
 INT_API_ENDPOINT_DEFAULTS = {#
     # Default API Endpoints (may be overwritten by commandline options)
-    INT_BPMN: '',
+    INT_BPMN_XML: '',
     INT_PLANTWEB_PLANTUML: '',
     INT_PLANTWEB_GRAPHVIZ: '',
     INT_PLANTWEB_DITAA: ''
 }
 
 SYNTAX_MATCH = {
-    INT_BPMN: r'(<bpmn(:definitions)?.*?/bpmn(:definitions)?>)',
+    INT_BPMN_XML: r'(<bpmn(:definitions)?.*?/bpmn(:definitions)?>)',
     INT_PLANTWEB_PLANTUML: r'@startuml(.*?)@enduml',
     INT_PLANTWEB_GRAPHVIZ: r'(d?i?\S?graph\s[\w+]\s*\{.*\}).*?$',
     INT_PLANTWEB_DITAA: r'```(.*?)```'
 }
 
 SYNTAX_MATCH_CODE_BLOCK = {
-    INT_BPMN: r'```(.*?)```', #'@startuml(.*?)@enduml',
+    INT_BPMN_XML: r'```(.*?)```', #'@startuml(.*?)@enduml',
     INT_PLANTWEB_PLANTUML: r'```(.*?)```', #'@startuml(.*?)@enduml',
     INT_PLANTWEB_GRAPHVIZ: r'```(.*?)```', #r'(strict)? (di.?)?graph.*?\{.*\}',
     INT_PLANTWEB_DITAA: r'```(.*?)```'
@@ -77,7 +77,6 @@ class InterpreterRuntime:
         if selected_int in INT_API_ENDPOINT_DEFAULTS.keys():
             self.api_endpoint = INT_API_ENDPOINT_DEFAULTS[selected_int]
         if api_endpoint:
-            print("Endpoint", selected_int, api_endpoint)
             self.api_endpoint = api_endpoint
 
     def execute_plantweb(self, int_input, plantweb_int_engine, plantweb_output_format, plantweb_use_cache):
