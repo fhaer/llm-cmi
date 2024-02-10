@@ -184,7 +184,8 @@ class InterpreterRuntime:
 
         # Decode SVG output using UTF-8
         if result_format and result_format.lower() == "svg":
-            return result_output.decode('utf-8')
+            if result_output and not isinstance(result_output, str):
+                return result_output.decode('utf-8')
         
         return result_output
         
