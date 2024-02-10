@@ -70,7 +70,7 @@ Example usage with Docker, BPMN-Auto-Layout and Ollama:
 
 ```sh
 docker build -t fhaer/llm-cli .
-docker run --rm -p 8501:8501 --pid=host -ti fhaer/llm-cmi python3 cmi.py -a Ollama::'http://172.17.0.1:11434/api' -a BPMN-Auto-Layout::'http://172.17.0.1:3000/process-diagram'
+docker run --rm -p 8501:8501 --pid=host -ti -v $PWD/cmi_logs:/app/cmi_logs fhaer/llm-cmi python3 cmi.py -a Ollama::'http://172.17.0.1:11434/api' -a BPMN-Auto-Layout::'http://172.17.0.1:3000/process-diagram'
 ```
 
 Example:
