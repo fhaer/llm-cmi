@@ -66,7 +66,7 @@ Example Usage:
 The web-based UI will be started at port <ui_port>, default: 8501
 ```
 
-Using with Docker, BPMN-Auto-Layout and Ollama:
+Example usage with Docker, BPMN-Auto-Layout and Ollama:
 
 ```sh
 docker build -t fhaer/llm-cli .
