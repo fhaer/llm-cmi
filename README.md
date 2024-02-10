@@ -66,11 +66,11 @@ Example Usage:
 The web-based UI will be started at port <ui_port>, default: 8501
 ```
 
-Using with Docker:
+Using with Docker, BPMN-Auto-Layout and Ollama:
 
 ```sh
 docker build -t fhaer/llm-cli .
-docker run --rm -p 8501:8501 --pid=host -ti fhaer/llm-cmi python3 cmi.py -a [...]
+docker run --rm -p 8501:8501 --pid=host -ti fhaer/llm-cmi python3 cmi.py -a Ollama::'http://172.17.0.1:11434/api' -a BPMN-Auto-Layout::'http://127.0.0.1:3000/process-diagram'
 ```
 
 Example:
