@@ -7,7 +7,7 @@ Note: The prototype is only intended as a feasibility demonstration.
 Requirements: 
 - Python 3.11 with the packages listed in requirements.txt
 - API keys for OpenAI and/or Replicate set with the "-a" option shown below
-- For local inference, Ollama or llama.cpp is required
+- For local inference, an Ollama endpoint needs to be set with the "-a" option
 
 Usage, parameters and further details:
 
@@ -19,17 +19,17 @@ Usage: cmi.py [-h|--help] [-a|--api <api_id>:<api_key>[:api_endpoint]]* [-p|--po
 
 <api_id> = OpenAI | Replicate | Ollama | BPMN-Auto-Layout
 
-Supported LLM APIs:
+Supported LLM Clients:
 - OpenAI
 - Replicate
 - Ollama
 
-Supported Interpreter APIs:
+Supported Interpreters:
 - BPMN-Auto-Layout/BPMN-XML
 - Plantweb/PlantUML
 - Plantweb/Graphviz
 
-Known LLMs:
+Supported LLMs:
 - Ollama/Llama2 (70b-chat-q5_k_m, 69B, Q5_K_M, 2e12d2211dd5)
 - Ollama/Mistral (7b-instruct-q5_k_m, 7B, Q5_K_M, 8397c99c426f)
 - Ollama/Mixtral (8x7b-instruct-v0.1-q5_k_m, 47B, Q5_K_M, 58b4d0644efd)
@@ -53,7 +53,7 @@ Known LLMs:
 - Replicate/Mixtral-8x7B-Instruct v0.1 7b3212fbaf88
 - Replicate/Llama2-70B-Chat 02e509c78996
 
-Note: When specifying an Ollama endpoint, available models will be requested form the API at runtime.
+Note: When specifying an Ollama endpoint, available models will be requested at runtime.
 
 Example Usage:
 - Run with API keys for OpenAI and Replicate:
@@ -66,16 +66,16 @@ Example Usage:
 The web-based UI will be started at port <ui_port>, default: 8501
 ```
 
-Example:
-
-<img src="https://raw.githubusercontent.com/fhaer/llm-cmi/master/cmi-graphviz.png" width="100%" />
-
 Using with Docker:
 
 ```sh
-docker build -t llm-cli .
-docker run -p 8501:8501 -t llm-cmi python3 cmi.py -a <api_id>:<api_key>:<url>
+docker build -t fhaer/llm-cli .
+docker run --rm -p 8501:8501 --pid=host -ti fhaer/llm-cmi python3 cmi.py -a [...]
 ```
+
+Example:
+
+<img src="https://raw.githubusercontent.com/fhaer/llm-cmi/master/cmi-graphviz.png" width="100%" />
 
 #### Related Publication
 

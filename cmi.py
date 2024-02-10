@@ -31,21 +31,21 @@ def print_usage():
     print("<api_id> =", api_id_options)
     print("")
     
-    print("Supported LLM APIs:")
+    print("Supported LLM Clients:")
     for api_id in conversation_manager.LLM_API_ID_LIST:
         print("-", api_id)
     print("")
 
-    print("Supported Interpreter APIs:")
+    print("Supported Interpreters:")
     for llm_id in conversation_manager.INT_ID_LIST:
         print("-", llm_id)
     print("")
 
-    print("Known LLMs:")
+    print("Supported LLMs:")
     for llm_id in conversation_manager.LLM_BY_ID_PRECONFIGURED:
         print("-", llm_id)
     print()
-    print("Note: When specifying an Ollama endpoint, available models will be requested form the API at runtime.")
+    print("Note: When specifying an Ollama endpoint, available models will be requested at runtime.")
     print("")
     
     print("Example Usage:")
