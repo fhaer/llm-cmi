@@ -122,7 +122,7 @@ class InterpreterRuntime:
                 #if 'layoutedDiagramXML' in response_data.keys():
                 #    result = [ response_data['layoutedDiagramXML'], "svg" ]
             except requests.exceptions.JSONDecodeError:
-                result = [ "JSON Decode Error", "txt" ]
+                result = [ "", "" ]
 
         return result
 

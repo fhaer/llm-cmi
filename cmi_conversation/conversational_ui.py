@@ -154,7 +154,7 @@ class ConversationalUI:
 
         # Execute interpreter
         def run_interpreter(input_syntax):
-            
+
             if input_syntax:
                 with st.chat_message(ROLE_IN):
                     # start interpreter and add rendered response
