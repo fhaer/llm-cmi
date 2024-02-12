@@ -1,5 +1,6 @@
 import sys
 import requests
+import re
 
 from plantweb.render import render, render_file
 
@@ -170,7 +171,7 @@ class InterpreterRuntime:
             # Execute interpreter
             result = self.execute_plantweb(int_input, plantweb_int_engine, plantweb_output_format, plantweb_use_cache)
 
-        elif self.selected_interpreter.startswith(INT_BPMN):
+        elif self.selected_interpreter.startswith(INT_BPMN) and not re.search("<\?xml", int_input):
             # add prolog
             int_input = '<?xml version="1.0" encoding="UTF-8"?>' + int_input
 
