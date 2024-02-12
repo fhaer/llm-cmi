@@ -108,13 +108,13 @@ class InterpreterRuntime:
             response = requests.post(self.api_endpoint, data=data, headers=headers)
 
             # https://github.com/MaxVidgof/bpmn-auto-layout
-            # Example: 
+            # Example:
             # - curl -H "Content-Type: text/plain" --data "@test.bpmn" http://127.0.0.1:3000/process-diagram
             # - response contians JSON data: with keys layoutedDiagramXML and svg
-            
+
             response_data = ""
             try:
-                print(response)
+                print(response.json())
                 response_data = response.json()
 
                 if 'svg' in response_data.keys():
@@ -122,6 +122,7 @@ class InterpreterRuntime:
                 #if 'layoutedDiagramXML' in response_data.keys():
                 #    result = [ response_data['layoutedDiagramXML'], "svg" ]
             except requests.exceptions.JSONDecodeError:
+                print("JSONDecodeError")
                 result = [ "", "" ]
 
         return result
