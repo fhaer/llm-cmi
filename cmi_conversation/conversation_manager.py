@@ -14,6 +14,9 @@ LLM_RUNTIME_ID_LIST = llm_runtime.LLM_RUNTIME_IDS
 LLM_BY_ID_PRECONFIGURED = llm_api_client.LLM_BY_ID | llm_runtime.LLM_BY_ID
 INT_ID_LIST = interpreter_runtime.INT_IDS
 
+LLM_UNSELECTED = '<Select Model>'
+INT_UNSELECTED = '<Select Interpreter>'
+
 class ConversationManager:
     """Manages the selected LLM and interpreter with parameters"""
 
@@ -27,8 +30,8 @@ class ConversationManager:
         self.interpreter_runtime = interpreter_runtime
         self.data_store = data_store
         self.conversational_ui = None
-        self.selected_llm_id = None
-        self.selected_int_id = None
+        self.selected_llm_id = LLM_UNSELECTED
+        self.selected_int_id = INT_UNSELECTED
         self.llm_parameters = None
         self.llm_parameters_default = None
         self.int_parameters = None
@@ -43,26 +46,30 @@ class ConversationManager:
         True is returned; otherwise False is returned.
         """
 
-        if not self.selected_llm_id or self.selected_llm_id != selected_llm_id:
-            print("Selected LLM:", selected_llm_id)
+        if self.selected_llm_id != selected_llm_id:
             self.selected_llm_id = selected_llm_id
-            self.selected_llm_api_id = self.available_models[selected_llm_id]
-            print("Reset LLM parameters")
-            self.llm_parameters = None
-            self.llm_parameters_default = None
-            self.file_upload = None
+            if selected_llm_id != LLM_UNSELECTED:
+                print("Selected LLM:", selected_llm_id)
+                self.selected_llm_api_id = self.available_models[selected_llm_id]
+                print("Reset LLM parameters")
+                self.llm_parameters = None
+                self.llm_parameters_default = None
+                self.file_upload = None
             return True
 
         return False
+    
+    def is_llm_selected(self):
+        return self.selected_llm_id != LLM_UNSELECTED
 
     def set_available_models(self):
         """Sets available models from each API that is enabled by setting an API key or endpoint"""
 
         if not self.available_models_loaded:
-            self.llm_api_client.query_available_models(self.api_keys, self.api_endpoints)
-            self.available_models = llm_api_client.LLM_BY_ID | llm_runtime.LLM_BY_ID
-            self.conversational_ui.set_available_models(self.available_models)
             self.available_models_loaded = True
+            self.llm_api_client.query_available_models(self.api_keys, self.api_endpoints)
+            self.available_models = {LLM_UNSELECTED:''} | llm_api_client.LLM_BY_ID | llm_runtime.LLM_BY_ID
+            self.conversational_ui.set_available_models(self.available_models)
 
     def initialize_llm(self, init_message, api_selected, api_key, api_endpoint):
         """Initialize LLM API or runtime"""
@@ -83,6 +90,8 @@ class ConversationManager:
         """
 
         if not self.llm_parameters:
+
+            self.llm_parameters = {}
 
             # set default values for the selected LLM, running via API or a runtime
             for api_id in LLM_API_ID_LIST:
@@ -120,12 +129,13 @@ class ConversationManager:
         True is returned; otherwise False is returned.
         """
 
-        if not self.selected_int_id or self.selected_int_id != selected_int_id:
-            print("Selected interpreter:", selected_int_id)
+        if self.selected_int_id != selected_int_id:
             self.selected_int_id = selected_int_id
-            print("Reset interpreter parameters")
-            self.int_parameters = None
-            self.int_parameters_default = None
+            if selected_int_id != INT_UNSELECTED and self.selected_llm_id != LLM_UNSELECTED:
+                print("Selected interpreter:", selected_int_id)
+                print("Reset interpreter parameters")
+                self.int_parameters = None
+                self.int_parameters_default = None
             return True
 
         return False

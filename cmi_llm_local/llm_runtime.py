@@ -48,17 +48,18 @@ class LLMRuntime:
     def load_llm_files(self, selected_llm, llm_parameters):
         """Load LLM files and initialize with runtime"""
 
-        print("Load LLM Files ...")
+        if selected_llm in LLM_BY_ID:
+            print("Load LLM Files ...")
 
-        self.selected_llm = selected_llm
-        self.llm_parameters = llm_parameters
+            self.selected_llm = selected_llm
+            self.llm_parameters = llm_parameters
 
-        self.llm_files = LLM_BY_ID[selected_llm]
-        print(self.llm_files)
-        self.llama_cpp = Llama(
-            model_path=self.llm_files, 
-            n_ctx=self.llm_parameters["n_ctx"]
-            )
+            self.llm_files = LLM_BY_ID[selected_llm]
+            print(self.llm_files)
+            self.llama_cpp = Llama(
+                model_path=self.llm_files, 
+                n_ctx=self.llm_parameters["n_ctx"]
+                )
 
     def run_llm_llama_cpp(self, context, prompt):
         """Run llama.cpp with the given context as message array. The prompt is assumed as last message of the context."""

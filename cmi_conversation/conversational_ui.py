@@ -177,43 +177,48 @@ class ConversationalUI:
         # Submit user-provided prompt
         def submit_user_prompt():
 
-            prompt = ""
+            if not self.conversation_manager.is_llm_selected():
+                st.session_state[SESSION_KEY_PROMPT] = ""
 
-            # construct prompt
-            if st.session_state[SESSION_KEY_PROMPT_PERPEND]:
-                # Streamlit requires two whitespace characters in front of a newline character (markdown syntax)
-                prompt = st.session_state[SESSION_KEY_PROMPT_PERPEND] + "  \n"
+            if self.conversation_manager.is_llm_selected():
 
-            prompt += st.session_state[SESSION_KEY_PROMPT]
+                prompt = ""
 
-            if st.session_state[SESSION_KEY_PROMPT_APPEND]:
-                # Streamlit requires two whitespace characters in front of a newline character (markdown syntax)
-                prompt += "  \n" + st.session_state[SESSION_KEY_PROMPT_APPEND]
+                # construct prompt
+                if st.session_state[SESSION_KEY_PROMPT_PERPEND]:
+                    # Streamlit requires two whitespace characters in front of a newline character (markdown syntax)
+                    prompt = st.session_state[SESSION_KEY_PROMPT_PERPEND] + "  \n"
 
-            st.session_state[SESSION_KEY_PROMPT] = ""
-            st.session_state[SESSION_KEY_PROMPT_PERPEND] = ""
-            st.session_state[SESSION_KEY_PROMPT_APPEND] = ""
+                prompt += st.session_state[SESSION_KEY_PROMPT]
 
-            # split batch prompt in multiple prompts
-            prompts = prompt.split("\n\\NEWPROMPT\n")
-            for prompt in prompts:
+                if st.session_state[SESSION_KEY_PROMPT_APPEND]:
+                    # Streamlit requires two whitespace characters in front of a newline character (markdown syntax)
+                    prompt += "  \n" + st.session_state[SESSION_KEY_PROMPT_APPEND]
 
-                # add prompt to context
-                st.session_state[SESSION_KEY_MESSAGES].append({ ROLE: ROLE_US, MSG: prompt, MSG_FORMAT: MSG_FORMAT_TXT })
+                st.session_state[SESSION_KEY_PROMPT] = ""
+                st.session_state[SESSION_KEY_PROMPT_PERPEND] = ""
+                st.session_state[SESSION_KEY_PROMPT_APPEND] = ""
 
-                # display message
-                with st.chat_message(ROLE_US):
-                    st.write(prompt)
+                # split batch prompt in multiple prompts
+                prompts = prompt.split("\n\\NEWPROMPT\n")
+                for prompt in prompts:
 
-                # run interpreter on prompt
-                #run_interpreter(prompt)
+                    # add prompt to context
+                    st.session_state[SESSION_KEY_MESSAGES].append({ ROLE: ROLE_US, MSG: prompt, MSG_FORMAT: MSG_FORMAT_TXT })
 
-                # run llm
-                (llm_response, llm_execution_duration) = run_llm(prompt)
-                int_input_syntax = self.conversation_manager.process_llm_response(llm_response, llm_execution_duration)
+                    # display message
+                    with st.chat_message(ROLE_US):
+                        st.write(prompt)
 
-                # run interpreter on response
-                run_interpreter(int_input_syntax)
+                    # run interpreter on prompt
+                    #run_interpreter(prompt)
+
+                    # run llm
+                    (llm_response, llm_execution_duration) = run_llm(prompt)
+                    int_input_syntax = self.conversation_manager.process_llm_response(llm_response, llm_execution_duration)
+
+                    # run interpreter on response
+                    run_interpreter(int_input_syntax)
 
         # Sidebar for parameter configuration
         with st.sidebar:
