@@ -169,7 +169,11 @@ class LLMApiClient:
             if API_OLLAMA in api_endpoints:
                 print("Requesting available Ollama models ...")
                 repsponse = requests.get(api_endpoints[API_OLLAMA] + '/tags')
-                m_json = repsponse.json()
+                m_json = []
+                try:
+                    m_json = repsponse.json()
+                except requests.exceptions.JSONDecodeError:
+                    print("API JSON Decode Error, possibly the API address set using -a is incorrect")
                 if 'models' in m_json:
                     # overwrite pre-defined models
                     remove_models = []
