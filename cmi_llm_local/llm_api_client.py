@@ -24,6 +24,7 @@ LLM_API_ENDPOINT_DEFAULTS = {#
 
 LLM_BY_ID = {
     # Ollama models, see https://ollama.ai/library
+    API_OLLAMA + '/Llama3 (70b-chat-q4_k_m, 71B, Q4_K_M, dc56bd3f6ae3)': 'llama3:70b-instruct-q4_K_M',
     API_OLLAMA + '/Llama2 (70b-chat-q5_k_m, 69B, Q5_K_M, 2e12d2211dd5)': 'llama2:70b-chat-q5_k_m',
     API_OLLAMA + '/Mistral (7b-instruct-q5_k_m, 7B, Q5_K_M, 8397c99c426f)': 'mistral:7b-instruct-q5_k_m',
     API_OLLAMA + '/Mixtral (8x7b-instruct-v0.1-q5_k_m, 47B, Q5_K_M, 58b4d0644efd)': 'mixtral:8x7b-instruct-v0.1-q5_k_m',
@@ -63,7 +64,8 @@ LLM_BY_ID = {
     #API_REPLICATE + '/CodeLlama-34B-Instruct-GGUF': 'andreasjansson/codellama-34b-instruct-gguf:f1091fa795c142a018268b193c9eea729e0a3f4d55d723df0b69f17b863bf5ea',
     #API_REPLICATE + '/WizardCoder-Python-34B': 'andreasjansson/wizardcoder-python-34b-v1-gguf:67eed332a5389263b8ede41be3ee7dc119fa984e2bde287814c4abed19a45e54',
     #API_REPLICATE + '/Falcon-40B-Instruct': 'joehoover/falcon-40b-instruct:7eb0f4b1ff770ab4f68c3a309dd4984469749b7323a3d47fd2d5e09d58836d3c',
-    API_REPLICATE + '/Llama2-70B-Chat 02e509c78996': 'meta/llama-2-70b-chat:02e509c789964a7ea8736978a43525956ef40397be9033abf9fd2badfe68c9e3',
+    API_REPLICATE + '/Llama2-70B-Chat': 'meta/llama-2-70b-chat',
+    API_REPLICATE + '/Llama3-70B-Chat': 'meta/meta-llama-3-70b-instruct',
 }
 
 # Query the following models on startup (overwrites pre-defined models) 
