@@ -133,7 +133,8 @@ ROLE_US = "user"
 
 MSG = "message"
 MSG_FORMAT = "format"
-MSG_FORMAT_TXT = "text"
+MSG_FORMAT_RESPONSE_LLM_TXT = "re/llm/txt"
+MSG_FORMAT_RESPONSE_LLM_CODE = "re/llm/code"
 
 class LLMApiClient:
     """Requests running a LLM through an API"""
@@ -300,7 +301,7 @@ class LLMApiClient:
         dialogue = CTX_TEMPLATE + "\\n\\n"
         for message in context:
             if MSG_FORMAT in message.keys() and ROLE in message.keys():
-                if message[MSG_FORMAT] == MSG_FORMAT_TXT:
+                if message[MSG_FORMAT] == MSG_FORMAT_RESPONSE_LLM_TXT:
                     role = message[ROLE]
                     if role == ROLE_US or role == ROLE_AS:
                         # include user and assistant messages in the prompt, 
@@ -321,7 +322,7 @@ class LLMApiClient:
         dialogue = CTX_TEMPLATE + "\n\n"
         for message in context:
             if MSG_FORMAT in message.keys() and ROLE in message.keys():
-                if message[MSG_FORMAT] == MSG_FORMAT_TXT:
+                if message[MSG_FORMAT] == MSG_FORMAT_RESPONSE_LLM_TXT:
                     role = message[ROLE]
                     if role == ROLE_US or role == ROLE_AS:
                         # include user and assistant messages in the prompt, 
@@ -394,7 +395,7 @@ class LLMApiClient:
         dialogue = []
         for message in context:
             if MSG_FORMAT in message.keys() and ROLE in message.keys():
-                if message[MSG_FORMAT] == MSG_FORMAT_TXT:
+                if message[MSG_FORMAT] == MSG_FORMAT_RESPONSE_LLM_TXT:
                     role = message[ROLE]
                     if role == ROLE_US or role == ROLE_AS:
                         dialogue.append({"role": message[ROLE], "content": message[MSG]})

@@ -32,7 +32,8 @@ ROLE_US = "user"
 
 MSG = "message"
 MSG_FORMAT = "format"
-MSG_FORMAT_TXT = "text"
+MSG_FORMAT_RESPONSE_LLM_TXT = "re/llm/txt"
+MSG_FORMAT_RESPONSE_LLM_CODE = "re/llm/code"
 
 class LLMRuntime:
     """Runs locally a LLM runtime such as llama.cpp"""
@@ -67,7 +68,7 @@ class LLMRuntime:
         dialogue = CTX_TEMPLATE + "\\n\\n"
         for message in context:
             if MSG_FORMAT in message.keys() and ROLE in message.keys():
-                if message[MSG_FORMAT] == MSG_FORMAT_TXT:
+                if message[MSG_FORMAT] == MSG_FORMAT_RESPONSE_LLM_TXT:
                     role = message[ROLE]
                     if role == ROLE_US or role == ROLE_AS:
                         dialogue += role + ": " + message[MSG] + "\\n\\n"

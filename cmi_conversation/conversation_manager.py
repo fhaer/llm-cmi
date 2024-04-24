@@ -204,15 +204,20 @@ class ConversationManager:
                 break
         
         return (items_wrapped, item_function, t_start)
+    
+    def record_llm_response(self, llm_response, execution_duration):
+        """
+        Stores an LLM response and the execution time. 
+        """
+        self.data_store.insert_llm_response(llm_response, execution_duration)
 
-    def process_llm_response(self, llm_response, execution_duration):
+    def process_llm_response(self, llm_response):
         """
         Parses an LLM response. If an LLM response contains concrete syntax, it is parsed and returned, otherwise None. 
         """
         
         output = None
 
-        self.data_store.insert_llm_response(llm_response, execution_duration)
         int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH[self.selected_int_id], llm_response, flags=re.DOTALL)
         # try to find conrete syntax
         if int_syntax_match_code:

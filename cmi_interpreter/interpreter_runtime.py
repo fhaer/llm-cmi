@@ -46,7 +46,7 @@ INT_API_ENDPOINT_DEFAULTS = {#
 
 SYNTAX_MATCH = {
     INT_BPMN_XML: r'(<bpmn(:definitions)?.*?/bpmn(:definitions)?>)',
-    INT_PLANTWEB_PLANTUML: r'@startuml(.*?)@enduml',
+    INT_PLANTWEB_PLANTUML: r'(.startuml.*?.enduml)',
     INT_PLANTWEB_GRAPHVIZ: r'(d?i?\S?graph\s[\w+]\s*\{.*\}).*?$',
     INT_PLANTWEB_DITAA: r'```(.*?)```'
 }

@@ -16,9 +16,11 @@ SESSION_KEY_CONTEXT_IDS = "context_ids/"
 SESSION_KEY_LLM_UI_INPUT = "ui/input/llm/"
 SESSION_KEY_INT_UI_INPUT = "ui/input/int/"
 
-SESSION_KEY_PROMPT = "prompt/message"
-SESSION_KEY_PROMPT_PERPEND = "prompt/message/prepend"
-SESSION_KEY_PROMPT_APPEND = "prompt/message/append"
+SESSION_KEY_NEXT_PROMPT = "prompt/message"
+SESSION_KEY_NEXT_PROMPT_PERPEND = "prompt/message/prepend"
+SESSION_KEY_NEXT_PROMPT_APPEND = "prompt/message/append"
+
+SESSION_KEY_NEXT_INT_INPUT = "int/input"
 
 ROLE = "role"
 ROLE_AS = "assistant"
@@ -26,9 +28,18 @@ ROLE_US = "user"
 ROLE_IN = "interpreter"
 
 MSG = "message"
+SRC = "source"
 MSG_FORMAT = "format"
-MSG_FORMAT_TXT = "text"
-MSG_FORMAT_IMG = "image"
+MSG_FORMAT_INIT = "in"
+MSG_FORMAT_PROMPT = "pr"
+MSG_FORMAT_RESPONSE_LLM = "re/llm"
+MSG_FORMAT_RESPONSE_LLM_TXT = "re/llm/txt"
+MSG_FORMAT_RESPONSE_LLM_CODE = "re/llm/code"
+MSG_FORMAT_RESPONSE_INT = "re/int"
+MSG_FORMAT_RESPONSE_INT_TXT = "re/int/txt"
+MSG_FORMAT_RESPONSE_INT_IMG = "re/int/img"
+MSG_RERUN_LLM = "rerun/llm"
+MSG_RERUN_INT = "rerun/int"
 
 INIT_MSG = "How may I assist you today?"
 
@@ -47,6 +58,7 @@ class ConversationalUI:
         self.ui_init_message = ui_init_message
         self.api_keys = api_keys
         self.conversation_manager = conversation_manager
+        self.message_id = 0
 
     def set_available_models(self, models):
         self.available_models = models
@@ -63,17 +75,23 @@ class ConversationalUI:
         
         # Initialize session storage for messages and prompts
         if SESSION_KEY_MESSAGES not in st.session_state.keys():
-            st.session_state[SESSION_KEY_MESSAGES] = [ {ROLE: ROLE_AS, MSG: INIT_MSG, MSG_FORMAT: MSG_FORMAT_TXT} ]
-        if SESSION_KEY_PROMPT not in st.session_state.keys():
-            st.session_state[SESSION_KEY_PROMPT] = ""
-        if SESSION_KEY_PROMPT_APPEND not in st.session_state.keys():
-            st.session_state[SESSION_KEY_PROMPT_APPEND] = ""
-        if SESSION_KEY_PROMPT_PERPEND not in st.session_state.keys():
-            st.session_state[SESSION_KEY_PROMPT_PERPEND] = ""
+            st.session_state[SESSION_KEY_MESSAGES] = [ {ROLE: ROLE_AS, MSG: INIT_MSG, MSG_FORMAT: MSG_FORMAT_INIT} ]
+        if SESSION_KEY_NEXT_PROMPT not in st.session_state.keys():
+            st.session_state[SESSION_KEY_NEXT_PROMPT] = ""
+        if SESSION_KEY_NEXT_PROMPT_APPEND not in st.session_state.keys():
+            st.session_state[SESSION_KEY_NEXT_PROMPT_APPEND] = ""
+        if SESSION_KEY_NEXT_PROMPT_PERPEND not in st.session_state.keys():
+            st.session_state[SESSION_KEY_NEXT_PROMPT_PERPEND] = ""
+        if SESSION_KEY_NEXT_INT_INPUT not in st.session_state.keys():
+            st.session_state[SESSION_KEY_NEXT_INT_INPUT] = ""
+        if MSG_RERUN_LLM not in st.session_state.keys():
+            st.session_state[MSG_RERUN_LLM] = False
+        if MSG_RERUN_INT not in st.session_state.keys():
+            st.session_state[MSG_RERUN_INT] = ""
 
         # Remove all messages
         def clear_chat_history():
-            st.session_state[SESSION_KEY_MESSAGES] = [ {ROLE: ROLE_AS, MSG: INIT_MSG, MSG_FORMAT: MSG_FORMAT_TXT} ]
+            st.session_state[SESSION_KEY_MESSAGES] = [ {ROLE: ROLE_AS, MSG: INIT_MSG, MSG_FORMAT: MSG_FORMAT_INIT} ]
             self.conversation_manager.clear_chat_history(INIT_MSG)
 
         # Enables displaying the file uploader in the chat
@@ -84,22 +102,26 @@ class ConversationalUI:
                 self.conversation_manager.remove_last_message()
             # remove last user message
             while len(st.session_state[SESSION_KEY_MESSAGES]) > 0 and st.session_state[SESSION_KEY_MESSAGES][-1][ROLE] == ROLE_US:
-                    st.session_state[SESSION_KEY_MESSAGES] = st.session_state[SESSION_KEY_MESSAGES][0:-1]
-                    self.conversation_manager.remove_last_message()
-        
+                st.session_state[SESSION_KEY_MESSAGES] = st.session_state[SESSION_KEY_MESSAGES][0:-1]
+                self.conversation_manager.remove_last_message()
+
         # Prepend text to the next prompt submitted by the user
         def prepend_to_next_prompt(prepend_message):
-            st.session_state[SESSION_KEY_PROMPT_PERPEND] = prepend_message
+            st.session_state[SESSION_KEY_NEXT_PROMPT_PERPEND] = prepend_message
             st.toast("File contents will be prepended to the next prompt submission")
 
         # Append text to the next prompt submitted by the user
         def append_to_next_prompt(append_message):
-            st.session_state[SESSION_KEY_PROMPT_APPEND] = append_message
+            st.session_state[SESSION_KEY_NEXT_PROMPT_APPEND] = append_message
             st.toast("File contents will be appended to the next prompt submission")
        
-        # Append text to the next prompt submitted by the user
-        def set_prompt(message):
-            st.session_state[SESSION_KEY_PROMPT] = message
+        # At the next UI update, run the given prompt
+        def schedule_llm_prompt_for_next_run(message):
+            st.session_state[SESSION_KEY_NEXT_PROMPT] = message
+       
+        # At the next UI update, run the interpreter
+        def schedule_int_input_for_next_run(int_input):
+            st.session_state[SESSION_KEY_NEXT_INT_INPUT] = int_input
        
         # Enables displaying the file uploader
         def show_file_uploader():
@@ -109,6 +131,35 @@ class ConversationalUI:
         # Disables displaying the file uploader
         def hide_file_uploader():
             st.session_state["show_file_uploader"] = False
+
+        def insert_llm_response(placeholder, llm_response, source, allow_rerun):
+            if placeholder is None:
+                with st.expander("LLM Response"):
+                    placeholder = st.empty()
+                    placeholder.markdown(llm_response)
+                            
+            self.message_id += 1
+
+            if source is None:
+                if allow_rerun:
+                    st.session_state[MSG_RERUN_INT] = None
+                    with st.expander("Edit LLM Response"):
+                        st.session_state[MSG_RERUN_INT] = st.text_area("Edit:", height=400, value=llm_response.lstrip())
+                    st.markdown("No model source code could be parsed from the LLM Response. Please re-run the LLM or edit the response and re-run the interpreter.")
+                    col1, col2 = st.columns(2)
+                    col1.button("Re-run LLM", on_click=remove_responses_and_rerun_llm, key="retry/llm/" + str(self.message_id), use_container_width=True)
+                    col2.button("Re-run interpreter", on_click=remove_int_response_and_rerun_int, key="retry/int/" + str(self.message_id), use_container_width=True)
+            else:
+                st.session_state[MSG_RERUN_INT] = None
+                with st.expander("Model Source Code"):
+                    if allow_rerun:
+                        st.session_state[MSG_RERUN_INT] = st.text_area("Edit:", height=400, value=source)
+                    else:
+                        st.markdown(f"```\n{source}\n```")
+                if allow_rerun:
+                    col1, col2 = st.columns(2)
+                    col1.button("Re-run LLM", on_click=remove_responses_and_rerun_llm, key="retry/llm/" + str(self.message_id), use_container_width=True)
+                    col2.button("Re-run interpreter", on_click=remove_int_response_and_rerun_int, key="retry/int/" + str(self.message_id), use_container_width=True)
 
         # Execute prompt
         def run_llm(prompt):
@@ -125,19 +176,27 @@ class ConversationalUI:
                     item_function = lambda item: item
                     try:
                         (items_wrapped, item_function, t_start) = self.conversation_manager.enter_prompt(context, prompt)
-                        placeholder = st.empty()
-                        for item in items_wrapped:
-                            llm_response += item_function(item)
-                            placeholder.markdown(llm_response + "▌")
-                        t_stop = perf_counter_ns()
-                        execution_duration = (t_stop-t_start)
-                        print("LLM total execution duration [ns]:", execution_duration)
-                        placeholder.markdown(llm_response)
+                        with st.expander("LLM Response"):
+                            #rerun_text = st.text_area("Edit:", height=400, value=llm_response)
+                            #st.text("")
+                            placeholder = st.empty()
+                            for item in items_wrapped:
+                                llm_response += item_function(item)
+                                placeholder.markdown(llm_response + "▌")
+                            t_stop = perf_counter_ns()
+                            execution_duration = (t_stop-t_start)
+                            print("LLM total execution duration [ns]:", execution_duration)
+                        # get and store source
+                        source = self.conversation_manager.process_llm_response(llm_response)
+                        st.session_state[SESSION_KEY_MESSAGES][-1][SRC] = source
+                        # show response
+                        insert_llm_response(placeholder, llm_response, source, True)
                     except requests.exceptions.ChunkedEncodingError as e:
                         placeholder.markdown(e)
+                        st.button("Retry", on_click=remove_responses_and_rerun_llm, key="retry/llm/placeholder/error")
 
             # append response to session state
-            message = {ROLE: ROLE_AS, MSG: llm_response, MSG_FORMAT: MSG_FORMAT_TXT}
+            message = {ROLE: ROLE_AS, MSG: llm_response, MSG_FORMAT: MSG_FORMAT_RESPONSE_LLM_TXT}
             st.session_state[SESSION_KEY_MESSAGES].append(message)
 
             return (llm_response, execution_duration)
@@ -145,17 +204,21 @@ class ConversationalUI:
         # Add interpreter output to session state
         def append_interpreter_output(text_output=None, image_output=None):
             if text_output:
-                message = {ROLE: ROLE_IN, MSG: text_output, MSG_FORMAT: MSG_FORMAT_TXT}
+                message = {ROLE: ROLE_IN, MSG: text_output, MSG_FORMAT: MSG_FORMAT_RESPONSE_INT_TXT}
                 st.session_state[SESSION_KEY_MESSAGES].append(message)
             if image_output:
                 #print(image_output)
-                message = {ROLE: ROLE_IN, MSG: image_output, MSG_FORMAT: MSG_FORMAT_IMG}
+                message = {ROLE: ROLE_IN, MSG: image_output, MSG_FORMAT: MSG_FORMAT_RESPONSE_INT_IMG}
                 st.session_state[SESSION_KEY_MESSAGES].append(message)
 
         # Execute interpreter
-        def run_interpreter(input_syntax):
+        def run_interpreter():
 
-            if input_syntax:
+            if st.session_state[SESSION_KEY_NEXT_INT_INPUT]:
+
+                input_syntax = st.session_state[SESSION_KEY_NEXT_INT_INPUT]
+                st.session_state[SESSION_KEY_NEXT_INT_INPUT] = ""
+
                 with st.chat_message(ROLE_IN):
                     # start interpreter and add rendered response
                     placeholder = st.empty()
@@ -173,52 +236,87 @@ class ConversationalUI:
                         #placeholder.error("*Interpreter response empty*")
                         placeholder.write("*Interpreter response invalid*")
                         append_interpreter_output(text_output="*Interpreter response invalid*")
+                        #st.button("Retry", on_click=remove_int_response_and_rerun_int, args=(input_syntax,), key="retry/int/placeholder/invalid")
 
         # Submit user-provided prompt
         def submit_user_prompt():
 
             if not self.conversation_manager.is_llm_selected():
-                st.session_state[SESSION_KEY_PROMPT] = ""
-
-            if self.conversation_manager.is_llm_selected():
+                st.session_state[SESSION_KEY_NEXT_PROMPT] = ""
+            else:
 
                 prompt = ""
 
                 # construct prompt
-                if st.session_state[SESSION_KEY_PROMPT_PERPEND]:
+                if st.session_state[SESSION_KEY_NEXT_PROMPT_PERPEND]:
                     # Streamlit requires two whitespace characters in front of a newline character (markdown syntax)
-                    prompt = st.session_state[SESSION_KEY_PROMPT_PERPEND] + "  \n"
+                    prompt = st.session_state[SESSION_KEY_NEXT_PROMPT_PERPEND] + "  \n"
 
-                prompt += st.session_state[SESSION_KEY_PROMPT]
+                prompt += st.session_state[SESSION_KEY_NEXT_PROMPT]
 
-                if st.session_state[SESSION_KEY_PROMPT_APPEND]:
+                if st.session_state[SESSION_KEY_NEXT_PROMPT_APPEND]:
                     # Streamlit requires two whitespace characters in front of a newline character (markdown syntax)
-                    prompt += "  \n" + st.session_state[SESSION_KEY_PROMPT_APPEND]
+                    prompt += "  \n" + st.session_state[SESSION_KEY_NEXT_PROMPT_APPEND]
 
-                st.session_state[SESSION_KEY_PROMPT] = ""
-                st.session_state[SESSION_KEY_PROMPT_PERPEND] = ""
-                st.session_state[SESSION_KEY_PROMPT_APPEND] = ""
+                st.session_state[SESSION_KEY_NEXT_PROMPT] = ""
+                st.session_state[SESSION_KEY_NEXT_PROMPT_PERPEND] = ""
+                st.session_state[SESSION_KEY_NEXT_PROMPT_APPEND] = ""
 
                 # split batch prompt in multiple prompts
                 prompts = prompt.split("\n\\NEWPROMPT\n")
                 for prompt in prompts:
 
-                    # add prompt to context
-                    st.session_state[SESSION_KEY_MESSAGES].append({ ROLE: ROLE_US, MSG: prompt, MSG_FORMAT: MSG_FORMAT_TXT })
-
-                    # display message
-                    with st.chat_message(ROLE_US):
-                        st.write(prompt)
-
-                    # run interpreter on prompt
-                    #run_interpreter(prompt)
+                    if not st.session_state[MSG_RERUN_LLM]:
+                        # add prompt to context
+                        st.session_state[SESSION_KEY_MESSAGES].append({ ROLE: ROLE_US, MSG: prompt, MSG_FORMAT: MSG_FORMAT_PROMPT })
+                        # display prompt message
+                        with st.chat_message(ROLE_US):
+                            st.write(prompt)
+                    st.session_state[MSG_RERUN_LLM] = False
 
                     # run llm
                     (llm_response, llm_execution_duration) = run_llm(prompt)
-                    int_input_syntax = self.conversation_manager.process_llm_response(llm_response, llm_execution_duration)
+                    self.conversation_manager.record_llm_response(llm_response, llm_execution_duration)
+                    int_input_syntax = self.conversation_manager.process_llm_response(llm_response)
 
+                    # store source
+                    st.session_state[SESSION_KEY_MESSAGES][-1][SRC] = int_input_syntax
+                    
                     # run interpreter on response
-                    run_interpreter(int_input_syntax)
+                    schedule_int_input_for_next_run(int_input_syntax)
+                    run_interpreter()
+
+                    st.experimental_rerun()
+
+        # Remove the last interpreter and LLM answers and re-run the LLM and interpreter
+        def remove_responses_and_rerun_llm():
+            # remove response (from interpreter)
+            while len(st.session_state[SESSION_KEY_MESSAGES]) > 0 and st.session_state[SESSION_KEY_MESSAGES][-1][MSG_FORMAT].startswith(MSG_FORMAT_RESPONSE_INT):
+                st.session_state[SESSION_KEY_MESSAGES] = st.session_state[SESSION_KEY_MESSAGES][0:-1]
+                self.conversation_manager.remove_last_message()
+            # remove response (from LLM)
+            while len(st.session_state[SESSION_KEY_MESSAGES]) > 0 and st.session_state[SESSION_KEY_MESSAGES][-1][MSG_FORMAT].startswith(MSG_FORMAT_RESPONSE_LLM):
+                st.session_state[SESSION_KEY_MESSAGES] = st.session_state[SESSION_KEY_MESSAGES][0:-1]
+                self.conversation_manager.remove_last_message()
+            # get last prompt and re-run
+            if st.session_state[SESSION_KEY_MESSAGES][-1][MSG_FORMAT] == MSG_FORMAT_PROMPT:
+                last_prompt = st.session_state[SESSION_KEY_MESSAGES][-1][MSG]
+                st.session_state[MSG_RERUN_LLM] = True
+                schedule_llm_prompt_for_next_run(last_prompt)
+
+        # Remove the last interpreter response and re-run the interpreter
+        def remove_int_response_and_rerun_int():
+            int_input = st.session_state[MSG_RERUN_INT]
+            # remove response (from interpreter)
+            while len(st.session_state[SESSION_KEY_MESSAGES]) > 0 and st.session_state[SESSION_KEY_MESSAGES][-1][MSG_FORMAT].startswith(MSG_FORMAT_RESPONSE_INT):
+                st.session_state[SESSION_KEY_MESSAGES] = st.session_state[SESSION_KEY_MESSAGES][0:-1]
+                self.conversation_manager.remove_last_message()
+            # set interpreter input and re-run
+            if st.session_state[SESSION_KEY_MESSAGES][-1][MSG_FORMAT].startswith(MSG_FORMAT_RESPONSE_LLM):
+                # store input as source code
+                st.session_state[SESSION_KEY_MESSAGES][-1][SRC] = int_input
+                schedule_int_input_for_next_run(int_input)
+
 
         # Sidebar for parameter configuration
         with st.sidebar:
@@ -320,7 +418,7 @@ class ConversationalUI:
                         text_content += stio.read()
                         stio.close()
                         uploaded_file.close()
-                        st.button("Submit contents", on_click=set_prompt, args=(text_content,), use_container_width=True)
+                        st.button("Submit contents", on_click=schedule_llm_prompt_for_next_run, args=(text_content,), use_container_width=True)
                         st.button("Append contents to next prompt", on_click=append_to_next_prompt, args=(text_content,), use_container_width=True)
                         st.button("Prepend contents to next prompt", on_click=prepend_to_next_prompt, args=(text_content,), use_container_width=True)
                         text_content = ""
@@ -328,8 +426,8 @@ class ConversationalUI:
                         st.error("Unicode decode error")
                 else:
                     # uploaded file cleared
-                    st.session_state[SESSION_KEY_PROMPT_APPEND] = ""
-                    st.session_state[SESSION_KEY_PROMPT_PERPEND] = ""
+                    st.session_state[SESSION_KEY_NEXT_PROMPT_APPEND] = ""
+                    st.session_state[SESSION_KEY_NEXT_PROMPT_PERPEND] = ""
             else:
                 st.session_state["file_uploader_visible"] = False
                 #st.experimental_rerun()
@@ -341,27 +439,47 @@ class ConversationalUI:
             # end of sidebar context
 
         # Display messages part of the session state
+        c = 0
         for message in st.session_state[SESSION_KEY_MESSAGES]:
+            self.message_id += 1
             avatar = None
             if message[ROLE] == ROLE_IN:
                 avatar = AVATAR_INTER
             with st.chat_message(message[ROLE]):
                 if MSG_FORMAT in message.keys():
-                    if message[MSG_FORMAT] == MSG_FORMAT_TXT:
-                        st.write(message[MSG])
-                    if message[MSG_FORMAT] == MSG_FORMAT_IMG:
-                        st.image(message[MSG])
+                    if message[MSG_FORMAT] == MSG_FORMAT_INIT or message[MSG_FORMAT] == MSG_FORMAT_PROMPT:
+                        placeholder = st.empty()
+                        placeholder.write(message[MSG])
+                        #placeholder.button("Edit", on_click=edit_prompt, key="edit/prompt/" + str(c))
+                        #placeholder.button("Retry", on_click=rerun_llm, key="retry/int/" + str(c))
+                    if message[MSG_FORMAT] == MSG_FORMAT_RESPONSE_LLM_TXT:
+                        #placeholder.write(message[MSG])
+                        allow_rerun = False
+                        if c >= len(st.session_state[SESSION_KEY_MESSAGES]) - 2 and not st.session_state[MSG_RERUN_LLM]:
+                            allow_rerun = True
+                        insert_llm_response(None, message[MSG], message[SRC], allow_rerun)
+                    if message[MSG_FORMAT] == MSG_FORMAT_RESPONSE_INT_IMG:
+                        placeholder = st.empty()
+                        placeholder.image(message[MSG])
+                        #placeholder.button("Retry", on_click=remove_int_response_and_rerun_int, args=(text), key="retry/int/" + str(c))
+                    if message[MSG_FORMAT] == MSG_FORMAT_RESPONSE_INT_TXT:
+                        placeholder = st.empty()
+                        placeholder.write(message[MSG])
+                        #placeholder.button("Retry", on_click=remove_int_response_and_rerun_int, args=(text), key="retry/int/" + str(self.message_id))
                 else:
                     print("Unknown format: " + str(message.keys()))
                     st.write(message[MSG])
+            c += 1
 
         # read user prompt input
         user_prompt_input = st.chat_input() #st.chat_input(disabled=(len(api_key) < 1))
         
         # if there is no system-side prompt set for execution, execute the user input
-        if not st.session_state[SESSION_KEY_PROMPT] and user_prompt_input:
-            st.session_state[SESSION_KEY_PROMPT] = user_prompt_input
+        if not st.session_state[SESSION_KEY_NEXT_PROMPT] and user_prompt_input:
+            st.session_state[SESSION_KEY_NEXT_PROMPT] = user_prompt_input
 
-        if st.session_state[SESSION_KEY_PROMPT]:
+        if st.session_state[SESSION_KEY_NEXT_PROMPT]:
             submit_user_prompt()
 
+        if st.session_state[SESSION_KEY_NEXT_INT_INPUT]:
+            run_interpreter()
