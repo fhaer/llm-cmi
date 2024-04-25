@@ -65,7 +65,7 @@ class ConversationalUI:
 
     def trigger_update(self, message):
         st.toast(message)
-        st.experimental_rerun()
+        st.rerun()
 
     def update_web_ui(self):
         """Updates the web UI with selectable LLMs, interpreters, current parameters, and messages of the conversation"""
@@ -286,7 +286,7 @@ class ConversationalUI:
                     schedule_int_input_for_next_run(int_input_syntax)
                     run_interpreter()
 
-                    st.experimental_rerun()
+                st.rerun()
 
         # Remove the last interpreter and LLM answers and re-run the LLM and interpreter
         def remove_responses_and_rerun_llm():
@@ -430,7 +430,7 @@ class ConversationalUI:
                     st.session_state[SESSION_KEY_NEXT_PROMPT_PERPEND] = ""
             else:
                 st.session_state["file_uploader_visible"] = False
-                #st.experimental_rerun()
+                #st.rerun()
 
             st.subheader('Conversation Context')
             st.sidebar.button('Start new conversation', on_click=clear_chat_history, use_container_width=True)
