@@ -133,8 +133,10 @@ ROLE_US = "user"
 
 MSG = "message"
 MSG_FORMAT = "format"
-MSG_FORMAT_RESPONSE_LLM_TXT = "re/llm/txt"
-MSG_FORMAT_RESPONSE_LLM_CODE = "re/llm/code"
+MSG_FORMAT_INIT = "in"
+MSG_FORMAT_PROMPT = "pr"
+MSG_FORMAT_RESPONSE_LLM = "re/llm"
+MSG_FORMAT_RESPONSE_INT = "re/int"
 
 class LLMApiClient:
     """Requests running a LLM through an API"""
@@ -246,7 +248,7 @@ class LLMApiClient:
         #print(self.llm_parameters)
         #print(api_parameters)
 
-        response = replicate.run(llm_id, input=api_parameters)
+        response = replicate.stream(llm_id, input=api_parameters)
         return response
 
     def run_llm_openai(self, llm_id, dialogue):
@@ -301,7 +303,7 @@ class LLMApiClient:
         dialogue = CTX_TEMPLATE + "\\n\\n"
         for message in context:
             if MSG_FORMAT in message.keys() and ROLE in message.keys():
-                if message[MSG_FORMAT] == MSG_FORMAT_RESPONSE_LLM_TXT:
+                if message[MSG_FORMAT] != MSG_FORMAT_RESPONSE_INT:
                     role = message[ROLE]
                     if role == ROLE_US or role == ROLE_AS:
                         # include user and assistant messages in the prompt, 
@@ -311,7 +313,7 @@ class LLMApiClient:
                         # do not include interpreter output
 
         items = self.run_llm_replicate(self.selected_llm_api_id, dialogue)
-        item_function = lambda item: item
+        item_function = lambda item: str(item)
         #result = [f"Echo: {prompt}"]
         return (items, item_function)
 
@@ -322,7 +324,7 @@ class LLMApiClient:
         dialogue = CTX_TEMPLATE + "\n\n"
         for message in context:
             if MSG_FORMAT in message.keys() and ROLE in message.keys():
-                if message[MSG_FORMAT] == MSG_FORMAT_RESPONSE_LLM_TXT:
+                if message[MSG_FORMAT] != MSG_FORMAT_RESPONSE_INT:
                     role = message[ROLE]
                     if role == ROLE_US or role == ROLE_AS:
                         # include user and assistant messages in the prompt, 
@@ -332,7 +334,7 @@ class LLMApiClient:
                         # do not include interpreter output
 
         items = self.run_llm_replicate(self.selected_llm_api_id, dialogue)
-        item_function = lambda item: item
+        item_function = lambda item: str(item)
         #result = [f"Echo: {prompt}"]
         return (items, item_function)
 
@@ -395,7 +397,7 @@ class LLMApiClient:
         dialogue = []
         for message in context:
             if MSG_FORMAT in message.keys() and ROLE in message.keys():
-                if message[MSG_FORMAT] == MSG_FORMAT_RESPONSE_LLM_TXT:
+                if message[MSG_FORMAT] != MSG_FORMAT_RESPONSE_INT:
                     role = message[ROLE]
                     if role == ROLE_US or role == ROLE_AS:
                         dialogue.append({"role": message[ROLE], "content": message[MSG]})
