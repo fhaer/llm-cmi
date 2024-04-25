@@ -30,6 +30,7 @@ Supported Interpreters:
 - Plantweb/Graphviz
 
 Supported LLMs:
+- Ollama/Llama3 (70b-chat-q4_k_m, 71B, Q4_K_M, dc56bd3f6ae3)
 - Ollama/Llama2 (70b-chat-q5_k_m, 69B, Q5_K_M, 2e12d2211dd5)
 - Ollama/Mistral (7b-instruct-q5_k_m, 7B, Q5_K_M, 8397c99c426f)
 - Ollama/Mixtral (8x7b-instruct-v0.1-q5_k_m, 47B, Q5_K_M, 58b4d0644efd)
