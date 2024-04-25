@@ -51,7 +51,8 @@ Supported LLMs:
 - OpenAI/gpt-3.5-turbo-1106
 - Replicate/Mistral-7B-Instruct v0.2 79052a3adbba
 - Replicate/Mixtral-8x7B-Instruct v0.1 7b3212fbaf88
-- Replicate/Llama2-70B-Chat 02e509c78996
+- Replicate/Llama2-70B-Chat
+- Replicate/Llama3-70B-Chat
 
 Note: When specifying an Ollama endpoint, available models will be requested at runtime.
 
