@@ -59,11 +59,11 @@ LLM_BY_ID = {
     #API_OPENAPI + '/gpt-3.5-turbo-16k-0613': 'gpt-3.5-turbo-16k-0613',
 
     # Replicate models, see https://replicate.com/explore, https://replicate.com/mistralai, https://replicate.com/meta
-    API_REPLICATE + '/Mistral-7B-Instruct v0.2 79052a3adbba': 'mistralai/mistral-7b-instruct-v0.2:79052a3adbba8116ebc6697dcba67ad0d58feff23e7aeb2f103fc9aa545f9269',
-    API_REPLICATE + '/Mixtral-8x7B-Instruct v0.1 7b3212fbaf88': 'mistralai/mixtral-8x7b-instruct-v0.1:7b3212fbaf88310cfef07a061ce94224e82efc8403c26fc67e8f6c065de51f21',
-    #API_REPLICATE + '/CodeLlama-34B-Instruct-GGUF': 'andreasjansson/codellama-34b-instruct-gguf:f1091fa795c142a018268b193c9eea729e0a3f4d55d723df0b69f17b863bf5ea',
-    #API_REPLICATE + '/WizardCoder-Python-34B': 'andreasjansson/wizardcoder-python-34b-v1-gguf:67eed332a5389263b8ede41be3ee7dc119fa984e2bde287814c4abed19a45e54',
-    #API_REPLICATE + '/Falcon-40B-Instruct': 'joehoover/falcon-40b-instruct:7eb0f4b1ff770ab4f68c3a309dd4984469749b7323a3d47fd2d5e09d58836d3c',
+    API_REPLICATE + '/Mistral-7B-Instruct v0.2 79052a3adbba': 'mistralai/mistral-7b-instruct-v0.2',
+    API_REPLICATE + '/Mixtral-8x7B-Instruct v0.1 7b3212fbaf88': 'mistralai/mixtral-8x7b-instruct-v0.1',
+    #API_REPLICATE + '/CodeLlama-34B-Instruct-GGUF': 'andreasjansson/codellama-34b-instruct-gguf',
+    #API_REPLICATE + '/WizardCoder-Python-34B': 'andreasjansson/wizardcoder-python-34b-v1-gguf',
+    #API_REPLICATE + '/Falcon-40B-Instruct': 'joehoover/falcon-40b-instruct',
     API_REPLICATE + '/Llama2-70B-Chat': 'meta/llama-2-70b-chat',
     API_REPLICATE + '/Llama3-70B-Chat': 'meta/meta-llama-3-70b-instruct',
 }
