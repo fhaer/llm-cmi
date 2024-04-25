@@ -59,7 +59,6 @@ LLM_BY_ID = {
     #API_OPENAPI + '/gpt-3.5-turbo-16k-0613': 'gpt-3.5-turbo-16k-0613',
 
     # Replicate models, see https://replicate.com/explore, https://replicate.com/mistralai, https://replicate.com/meta
-    API_REPLICATE + '/Mistral-7B-Instruct v0.2 79052a3adbba': 'mistralai/mistral-7b-instruct-v0.2',
     API_REPLICATE + '/Mixtral-8x7B-Instruct v0.1 7b3212fbaf88': 'mistralai/mixtral-8x7b-instruct-v0.1',
     #API_REPLICATE + '/CodeLlama-34B-Instruct-GGUF': 'andreasjansson/codellama-34b-instruct-gguf',
     #API_REPLICATE + '/WizardCoder-Python-34B': 'andreasjansson/wizardcoder-python-34b-v1-gguf',
