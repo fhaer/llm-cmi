@@ -33,9 +33,9 @@ Supported LLMs:
 - OpenAI/gpt-4-0125-preview
 - OpenAI/gpt-4-0613
 - OpenAI/gpt-3.5-turbo-0125
-- Replicate/Mixtral-8x7B-Instruct v0.1 7b3212fbaf88
-- Replicate/Llama2-70B-Chat
-- Replicate/Llama3-70B-Chat
+- Replicate/mixtral-8x7B-Instruct v0.1
+- Replicate/llama3-70B-Chat
+- Replicate/llama2-70B-Chat
 - Ollama models (loaded at runtime)
 
 Example Usage:
