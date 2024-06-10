@@ -189,6 +189,7 @@ else:
     st.session_state[SESSION_KEY_CMI] = cmi
     cmi.load_components()
     cmi.conversation_manager.set_available_models()
+    cmi.conversation_manager.set_available_interpreters()
 
 # update the web UI
 cmi.conversational_ui.update_web_ui()

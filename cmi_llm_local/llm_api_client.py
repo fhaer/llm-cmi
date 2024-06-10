@@ -23,42 +23,14 @@ LLM_API_ENDPOINT_DEFAULTS = {#
 }
 
 LLM_BY_ID = {
-    # Ollama models, see https://ollama.ai/library
-    API_OLLAMA + '/Llama3 (70b-chat-q4_k_m, 71B, Q4_K_M, dc56bd3f6ae3)': 'llama3:70b-instruct-q4_K_M',
-    API_OLLAMA + '/Llama2 (70b-chat-q5_k_m, 69B, Q5_K_M, 2e12d2211dd5)': 'llama2:70b-chat-q5_k_m',
-    API_OLLAMA + '/Mistral (7b-instruct-q5_k_m, 7B, Q5_K_M, 8397c99c426f)': 'mistral:7b-instruct-q5_k_m',
-    API_OLLAMA + '/Mixtral (8x7b-instruct-v0.1-q5_k_m, 47B, Q5_K_M, 58b4d0644efd)': 'mixtral:8x7b-instruct-v0.1-q5_k_m',
-    API_OLLAMA + '/Neural-chat (7b-v3.3-q5_k_m, 7B, Q5_K_M, 6e7f6242bbec)': 'neural-chat:7b-v3.3-q5_k_m',
-    API_OLLAMA + '/Openchat (7b-v3.5-1210-q5_k_m, 7B, Q5_K_M, 64e4cb9bb506)': 'openchat:7b-v3.5-1210-q5_k_m',
-    API_OLLAMA + '/Openhermes (7b-mistral-v2.5-q5_k_m, 7B, Q5_K_M, 16eab97b0cd1)': 'openhermes:7b-mistral-v2.5-q5_k_m',
-    API_OLLAMA + '/Orca2 (13b-q5_k_m, 13B, Q5_K_M, d5e443067226)': 'orca2:13b-q5_k_m',
-    API_OLLAMA + '/Phi (2.7b-chat-v2-q5_k_m, 3B, Q5_K_M, 4dbc1775ae76)': 'phi:2.7b-chat-v2-q5_k_m',
-    API_OLLAMA + '/Qwen (14b-chat-v1.5-q5_k_m, 14B, Q5_K_M, ba0e61d66b27)': 'qwen:14b-chat-v1.5-q5_k_m',
-    API_OLLAMA + '/Qwen (72b-chat-v1.5-q5_k_m, 72B, Q5_K_M, 13a773260811)': 'qwen:72b-chat-v1.5-q5_k_m',
-    API_OLLAMA + '/Solar (10.7b-instruct-v1-q5_k_m, 11B, Q5_K_M, ef538f3193f7)': 'solar:10.7b-instruct-v1-q5_k_m',
-    API_OLLAMA + '/Stable-beluga (13b-q5_k_m, 13B, Q5_K_M, 72350608e9fc)': 'stable-beluga:13b-q5_k_m',
-    API_OLLAMA + '/Stablelm2 (1.6b-zephyr-q4_k_m, 2B, Q4_K_M, 2f41c2ec1f16)': 'stablelm2:1.6b-zephyr-q4_k_m',
-    API_OLLAMA + '/Yi (34b-chat-q5_k_m, 34B, Q5_K_M, 56f40aebe6c6)': 'yi:34b-chat-q5_k_m',
-
-    # GPT models, see https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo
+    # 1. Ollama models will be loaded at runtime
+    # 2. GPT models, see https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo
+    API_OPENAPI + '/gpt-4o-2024-05-13': 'gpt-4o-2024-05-13',
+    API_OPENAPI + '/gpt-4-turbo-2024-04-09': 'gpt-4-turbo-2024-04-09',
     API_OPENAPI + '/gpt-4-0125-preview': 'gpt-4-0125-preview',
-    API_OPENAPI + '/gpt-4-1106-preview': 'gpt-4-1106-preview',
     API_OPENAPI + '/gpt-4-0613': 'gpt-4-0613',
-    #API_OPENAPI + '/gpt-4': 'gpt-4', # Currently points to gpt-4-0613
-    #API_OPENAPI + '/gpt-4-turbo-preview': 'gpt-4-turbo-preview', # Currently points to gpt-4-0125-preview.
-    #API_OPENAPI + '/gpt-4-vision-preview': 'gpt-4-vision-preview',
     API_OPENAPI + '/gpt-3.5-turbo-0125': 'gpt-3.5-turbo-0125',
-    API_OPENAPI + '/gpt-3.5-turbo-1106': 'gpt-3.5-turbo-1106',
-    #API_OPENAPI + '/gpt-3.5-turbo': 'gpt-3.5-turbo',  # Currently points to gpt-3.5-turbo-0613. The gpt-3.5-turbo model alias will be automatically upgraded from gpt-3.5-turbo-0613 to gpt-3.5-turbo-0125 on February 16th.
-    # Legacy:
-    #API_OPENAPI + '/gpt-3.5-turbo-0301': 'gpt-3.5-turbo-0301',
-    #API_OPENAPI + '/gpt-3.5-turbo-instruct': 'gpt-3.5-turbo-instruct',
-    #API_OPENAPI + '/gpt-3.5-turbo-instruct-0914': 'gpt-3.5-turbo-instruct-0914'
-    #API_OPENAPI + '/gpt-3.5-turbo-16k': 'gpt-3.5-turbo-16k',
-    #API_OPENAPI + '/gpt-3.5-turbo-0613': 'gpt-3.5-turbo-0613',
-    #API_OPENAPI + '/gpt-3.5-turbo-16k-0613': 'gpt-3.5-turbo-16k-0613',
-
-    # Replicate models, see https://replicate.com/explore, https://replicate.com/mistralai, https://replicate.com/meta
+    # 3. Replicate models, see https://replicate.com/explore, https://replicate.com/mistralai, https://replicate.com/meta
     API_REPLICATE + '/Mixtral-8x7B-Instruct v0.1 7b3212fbaf88': 'mistralai/mixtral-8x7b-instruct-v0.1',
     #API_REPLICATE + '/CodeLlama-34B-Instruct-GGUF': 'andreasjansson/codellama-34b-instruct-gguf',
     #API_REPLICATE + '/WizardCoder-Python-34B': 'andreasjansson/wizardcoder-python-34b-v1-gguf',

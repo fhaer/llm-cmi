@@ -63,6 +63,9 @@ class ConversationalUI:
     def set_available_models(self, models):
         self.available_models = models
 
+    def set_available_interpreters(self, interpreters):
+        self.available_interpreters = interpreters
+
     def trigger_update(self, message):
         st.toast(message)
         st.rerun()
@@ -134,7 +137,7 @@ class ConversationalUI:
 
         def insert_llm_response(placeholder, llm_response, source, allow_rerun):
             if placeholder is None:
-                with st.expander("LLM Response"):
+                with st.expander("LLM Response", expanded=True):
                     placeholder = st.empty()
                     placeholder.markdown(llm_response)
                             
@@ -143,12 +146,16 @@ class ConversationalUI:
             if source is None:
                 if allow_rerun:
                     st.session_state[MSG_RERUN_INT] = None
-                    with st.expander("Edit LLM Response"):
-                        st.session_state[MSG_RERUN_INT] = st.text_area("Edit:", height=400, value=llm_response.lstrip())
-                    st.markdown("No model source code could be parsed from the LLM Response. Please re-run the LLM or edit the response and re-run the interpreter.")
-                    col1, col2 = st.columns(2)
-                    col1.button("Re-run LLM", on_click=remove_responses_and_rerun_llm, key="retry/llm/" + str(self.message_id), use_container_width=True)
-                    col2.button("Re-run interpreter", on_click=remove_int_response_and_rerun_int, key="retry/int/" + str(self.message_id), use_container_width=True)
+                    if self.conversation_manager.is_int_selected():
+                        with st.expander("Edit LLM Response"):
+                            st.session_state[MSG_RERUN_INT] = st.text_area("Edit:", height=400, value=llm_response.lstrip())
+                        st.markdown("No model source code could be parsed from the LLM Response. Please re-run the LLM or edit the response and re-run the interpreter.")
+                    if self.conversation_manager.is_int_selected():
+                        col1, col2 = st.columns(2)
+                        col1.button("Re-run LLM", on_click=remove_responses_and_rerun_llm, key="retry/llm/" + str(self.message_id), use_container_width=True)
+                        col2.button("Re-run interpreter", on_click=remove_int_response_and_rerun_int, key="retry/int/" + str(self.message_id), use_container_width=True, disabled=(not self.conversation_manager.is_int_selected()))
+                    else:
+                        st.button("Re-run LLM", on_click=remove_responses_and_rerun_llm, key="retry/llm/" + str(self.message_id), use_container_width=True)
             else:
                 st.session_state[MSG_RERUN_INT] = None
                 with st.expander("Model Source Code"):
@@ -157,9 +164,12 @@ class ConversationalUI:
                     else:
                         st.markdown(f"```\n{source}\n```")
                 if allow_rerun:
-                    col1, col2 = st.columns(2)
-                    col1.button("Re-run LLM", on_click=remove_responses_and_rerun_llm, key="retry/llm/" + str(self.message_id), use_container_width=True)
-                    col2.button("Re-run interpreter", on_click=remove_int_response_and_rerun_int, key="retry/int/" + str(self.message_id), use_container_width=True)
+                    if self.conversation_manager.is_int_selected():
+                        col1, col2 = st.columns(2)
+                        col1.button("Re-run LLM", on_click=remove_responses_and_rerun_llm, key="retry/llm/" + str(self.message_id), use_container_width=True)
+                        col2.button("Re-run interpreter", on_click=remove_int_response_and_rerun_int, key="retry/int/" + str(self.message_id), use_container_width=True, disabled=(not self.conversation_manager.is_int_selected()))
+                    else:
+                        st.button("Re-run LLM", on_click=remove_responses_and_rerun_llm, key="retry/llm/" + str(self.message_id), use_container_width=True)
 
         # Execute prompt
         def run_llm(prompt):
@@ -176,7 +186,7 @@ class ConversationalUI:
                     item_function = lambda item: item
                     try:
                         (items_wrapped, item_function, t_start) = self.conversation_manager.enter_prompt(context, prompt)
-                        with st.expander("LLM Response"):
+                        with st.expander("LLM Response", expanded=True):
                             #rerun_text = st.text_area("Edit:", height=400, value=llm_response)
                             #st.text("")
                             placeholder = st.empty()
@@ -214,7 +224,7 @@ class ConversationalUI:
         # Execute interpreter
         def run_interpreter():
 
-            if st.session_state[SESSION_KEY_NEXT_INT_INPUT]:
+            if self.conversation_manager.is_int_selected() and st.session_state[SESSION_KEY_NEXT_INT_INPUT]:
 
                 input_syntax = st.session_state[SESSION_KEY_NEXT_INT_INPUT]
                 st.session_state[SESSION_KEY_NEXT_INT_INPUT] = ""
@@ -306,16 +316,17 @@ class ConversationalUI:
 
         # Remove the last interpreter response and re-run the interpreter
         def remove_int_response_and_rerun_int():
-            int_input = st.session_state[MSG_RERUN_INT]
-            # remove response (from interpreter)
-            while len(st.session_state[SESSION_KEY_MESSAGES]) > 0 and st.session_state[SESSION_KEY_MESSAGES][-1][MSG_FORMAT].startswith(MSG_FORMAT_RESPONSE_INT):
-                st.session_state[SESSION_KEY_MESSAGES] = st.session_state[SESSION_KEY_MESSAGES][0:-1]
-                self.conversation_manager.remove_last_message()
-            # set interpreter input and re-run
-            if st.session_state[SESSION_KEY_MESSAGES][-1][MSG_FORMAT].startswith(MSG_FORMAT_RESPONSE_LLM):
-                # store input as source code
-                st.session_state[SESSION_KEY_MESSAGES][-1][SRC] = int_input
-                schedule_int_input_for_next_run(int_input)
+            if self.conversation_manager.is_int_selected():
+                int_input = st.session_state[MSG_RERUN_INT]
+                # remove response (from interpreter)
+                while len(st.session_state[SESSION_KEY_MESSAGES]) > 0 and st.session_state[SESSION_KEY_MESSAGES][-1][MSG_FORMAT].startswith(MSG_FORMAT_RESPONSE_INT):
+                    st.session_state[SESSION_KEY_MESSAGES] = st.session_state[SESSION_KEY_MESSAGES][0:-1]
+                    self.conversation_manager.remove_last_message()
+                # set interpreter input and re-run
+                if st.session_state[SESSION_KEY_MESSAGES][-1][MSG_FORMAT].startswith(MSG_FORMAT_RESPONSE_LLM):
+                    # store input as source code
+                    st.session_state[SESSION_KEY_MESSAGES][-1][SRC] = int_input
+                    schedule_int_input_for_next_run(int_input)
 
 
         # Sidebar for parameter configuration
@@ -375,7 +386,7 @@ class ConversationalUI:
             # Interpreter selection
             selected_interpreter = st.sidebar.selectbox(
                 'Interpreter',
-                conversation_manager.INT_ID_LIST,
+                sorted(self.available_interpreters.keys()),
                 key='selected_interpreter')
 
             new_interpreter_selected = self.conversation_manager.select_interpreter(selected_interpreter)

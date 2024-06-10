@@ -12,7 +12,7 @@ INT_API_ID_LIST = interpreter_runtime.INT_API_IDS
 LLM_API_ID_LIST = llm_api_client.LLM_API_IDS
 LLM_RUNTIME_ID_LIST = llm_runtime.LLM_RUNTIME_IDS
 LLM_BY_ID_PRECONFIGURED = llm_api_client.LLM_BY_ID | llm_runtime.LLM_BY_ID
-INT_ID_LIST = interpreter_runtime.INT_IDS
+INT_BY_ID_PRECONFIGURED = interpreter_runtime.INT_BY_ID
 
 LLM_UNSELECTED = '<Select Model>'
 INT_UNSELECTED = '<Select Interpreter>'
@@ -25,6 +25,7 @@ class ConversationManager:
         self.api_keys = api_keys
         self.api_endpoints = api_endpoints
         self.available_models_loaded = False
+        self.available_interpreters_loaded = False
         self.llm_api_client = llm_api_client
         self.llm_runtime = llm_runtime
         self.interpreter_runtime = interpreter_runtime
@@ -61,6 +62,9 @@ class ConversationManager:
     
     def is_llm_selected(self):
         return self.selected_llm_id != LLM_UNSELECTED
+    
+    def is_int_selected(self):
+        return self.selected_int_id != INT_UNSELECTED
 
     def set_available_models(self):
         """Sets available models from each API that is enabled by setting an API key or endpoint"""
@@ -70,6 +74,14 @@ class ConversationManager:
             self.llm_api_client.query_available_models(self.api_keys, self.api_endpoints)
             self.available_models = {LLM_UNSELECTED:''} | llm_api_client.LLM_BY_ID | llm_runtime.LLM_BY_ID
             self.conversational_ui.set_available_models(self.available_models)
+
+    def set_available_interpreters(self):
+        """Sets available interpreters"""
+
+        if not self.available_interpreters_loaded:
+            self.available_interpreters_loaded = True
+            self.available_interpreters = {INT_UNSELECTED:''} | interpreter_runtime.INT_BY_ID
+            self.conversational_ui.set_available_interpreters(self.available_interpreters)
 
     def initialize_llm(self, init_message, api_selected, api_key, api_endpoint):
         """Initialize LLM API or runtime"""
@@ -147,8 +159,11 @@ class ConversationManager:
         """
 
         if not self.int_parameters:
+
+            self.int_parameters = {}
+
             # set default values depending on the interpreter
-            for int_id in INT_ID_LIST:
+            for int_id in INT_BY_ID_PRECONFIGURED.keys():
                 if self.selected_int_id.startswith(int_id):
                     self.int_parameters = interpreter_runtime.PARAMETER_DEFAULTS[int_id].copy()
                     self.int_parameters_default = interpreter_runtime.PARAMETER_DEFAULTS[int_id].copy()
@@ -218,20 +233,22 @@ class ConversationManager:
         
         output = None
 
-        int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH[self.selected_int_id], llm_response, flags=re.DOTALL)
-        # try to find conrete syntax
-        if int_syntax_match_code:
-            output = int_syntax_match_code.group(1)
-        else:
-            # try to find any syntax in a code block
-            int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_BLOCK[self.selected_int_id], llm_response, flags=re.DOTALL)
+        if self.is_int_selected():
+
+            int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH[self.selected_int_id], llm_response, flags=re.DOTALL)
+            # try to find conrete syntax
             if int_syntax_match_code:
                 output = int_syntax_match_code.group(1)
-            #else:
-            # try to find any code word
-            #int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_WORD, llm_response, flags=re.DOTALL)
-            #if int_syntax_match_code:
-            #    output = int_syntax_match_code.group(1)
+            else:
+                # try to find any syntax in a code block
+                int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_BLOCK[self.selected_int_id], llm_response, flags=re.DOTALL)
+                if int_syntax_match_code:
+                    output = int_syntax_match_code.group(1)
+                #else:
+                # try to find any code word
+                #int_syntax_match_code = re.search(interpreter_runtime.SYNTAX_MATCH_CODE_WORD, llm_response, flags=re.DOTALL)
+                #if int_syntax_match_code:
+                #    output = int_syntax_match_code.group(1)
         
         return output
 
