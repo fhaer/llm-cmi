@@ -31,12 +31,10 @@ LLM_BY_ID = {
     API_OPENAPI + '/gpt-4-0613': 'gpt-4-0613',
     API_OPENAPI + '/gpt-3.5-turbo-0125': 'gpt-3.5-turbo-0125',
     # 3. Replicate models, see https://replicate.com/explore, https://replicate.com/mistralai, https://replicate.com/meta
-    API_REPLICATE + '/Mixtral-8x7B-Instruct v0.1 7b3212fbaf88': 'mistralai/mixtral-8x7b-instruct-v0.1',
-    #API_REPLICATE + '/CodeLlama-34B-Instruct-GGUF': 'andreasjansson/codellama-34b-instruct-gguf',
-    #API_REPLICATE + '/WizardCoder-Python-34B': 'andreasjansson/wizardcoder-python-34b-v1-gguf',
-    #API_REPLICATE + '/Falcon-40B-Instruct': 'joehoover/falcon-40b-instruct',
-    API_REPLICATE + '/Llama2-70B-Chat': 'meta/llama-2-70b-chat',
-    API_REPLICATE + '/Llama3-70B-Chat': 'meta/meta-llama-3-70b-instruct',
+    API_REPLICATE + '/mixtral-8x7B-Instruct v0.1': 'mistralai/mixtral-8x7b-instruct-v0.1',
+    API_REPLICATE + '/llama3-70B-Chat': 'meta/meta-llama-3-70b-instruct',
+    API_REPLICATE + '/llama2-70B-Chat': 'meta/llama-2-70b-chat',
+    # TODO: Phi, Codestral
 }
 
 # Query the following models on startup (overwrites pre-defined models) 
