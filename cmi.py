@@ -37,17 +37,16 @@ def print_usage():
     print("")
 
     print("Supported Interpreters:")
-    for llm_id in conversation_manager.INT_ID_LIST:
+    for llm_id in conversation_manager.INT_API_ID_LIST:
         print("-", llm_id)
     print("")
 
     print("Supported LLMs:")
     for llm_id in conversation_manager.LLM_BY_ID_PRECONFIGURED:
         print("-", llm_id)
-    print()
-    print("Note: When specifying an Ollama endpoint, available models will be requested at runtime.")
+    print("- Ollama models (loaded at runtime)")
     print("")
-    
+
     print("Example Usage:")
     print("- Run with API keys for OpenAI and Replicate:")
     print("  cmi.py -a OpenAI:INSERT_KEY -a Replicate:INSERT_KEY")
