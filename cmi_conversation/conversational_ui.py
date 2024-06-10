@@ -137,7 +137,7 @@ class ConversationalUI:
 
         def insert_llm_response(placeholder, llm_response, source, allow_rerun):
             if placeholder is None:
-                with st.expander("LLM Response", expanded=True):
+                with st.expander("LLM Response", expanded=False):
                     placeholder = st.empty()
                     placeholder.markdown(llm_response)
                             
@@ -445,7 +445,7 @@ class ConversationalUI:
 
             st.subheader('Conversation Context')
             st.sidebar.button('Start new conversation', on_click=clear_chat_history, use_container_width=True)
-            st.sidebar.button('Remove last message', on_click=remove_last_prompt_and_response, use_container_width=True)
+            st.sidebar.button('Remove last prompt and response', on_click=remove_last_prompt_and_response, use_container_width=True)
 
             # end of sidebar context
 

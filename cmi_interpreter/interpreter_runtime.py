@@ -89,7 +89,7 @@ class InterpreterRuntime:
     def execute_plantweb(self, int_input, plantweb_int_engine, plantweb_output_format, plantweb_use_cache):
         """Run Plantweb interpreter with the given API"""
 
-        print("Interpreter Input:\n", int_input, sep="")
+        print("Interpreter Input:\n", int_input[:20], " ...", sep="")
         #print(self.int_parameters)
         result = render(
             int_input,
@@ -104,7 +104,7 @@ class InterpreterRuntime:
     def execute_bpmn(self, int_input):
         """Run BPMN interpreter"""
 
-        print("Interpreter Input:\n", int_input, sep="")
+        print("Interpreter Input:\n", int_input[:20], " ...", sep="")
 
         result = None
 
@@ -112,6 +112,7 @@ class InterpreterRuntime:
             #auth=('apikey', self.apikey)
             data = int_input.encode('utf-8')
             headers = {'Content-Type': 'text/plain'}
+            print(f"Sending request to {self.api_endpoint} ...")
             response = requests.post(self.api_endpoint, data=data, headers=headers)
 
             # https://github.com/MaxVidgof/bpmn-auto-layout
@@ -121,8 +122,9 @@ class InterpreterRuntime:
 
             response_data = ""
             try:
-                print(response.json())
                 response_data = response.json()
+                response_str = str(response_data)
+                print("Response:\n", response_str[:20], "...")
 
                 if 'svg' in response_data.keys():
                     result = [ response_data['svg'], "svg" ]
@@ -140,13 +142,17 @@ class InterpreterRuntime:
 
         int_input = input_syntax
 
-        # remove syntax format
-        if int_input.startswith("plantuml\n"):
-            int_input = int_input[9:]
-        if int_input.startswith("graphviz\n"):
-            int_input = int_input[9:]
-        if int_input.startswith("dot\n"):
-            int_input = int_input[4:]
+        # remove syntax formatting instruction placed by LLM
+        if int_input.startswith("plantuml"):
+            int_input = int_input[8:]
+        if int_input.startswith("graphviz"):
+            int_input = int_input[8:]
+        if int_input.startswith("dot"):
+            int_input = int_input[3:]
+        if int_input.startswith("xml"):
+            int_input = int_input[3:]
+        if int_input.startswith("\n"):
+            int_input = int_input[1:]
 
         # set the engine, add interpreter directives and execute interpreter
         result = []
@@ -170,21 +176,21 @@ class InterpreterRuntime:
                     int_input = int_input + '\n@enddot'
             elif self.selected_interpreter == INT_PLANTWEB_DITAA:
                 plantweb_int_engine = "ditaa"
-            
+
             plantweb_output_format = self.int_parameters['Output format']
             plantweb_use_cache = self.int_parameters['Use cache']
 
             # Execute interpreter
             result = self.execute_plantweb(int_input, plantweb_int_engine, plantweb_output_format, plantweb_use_cache)
 
-        elif self.selected_interpreter.startswith(INT_BPMN) and not re.search("<\?xml", int_input):
-            # add prolog
-            int_input = '<?xml version="1.0" encoding="UTF-8"?>' + int_input
+        elif self.selected_interpreter.startswith(INT_BPMN):
+            if not re.search("<\?xml", int_input):
+                # add prolog
+                int_input = '<?xml version="1.0" encoding="UTF-8"?>' + int_input
 
             # Execute interpreter
             result = self.execute_bpmn(int_input)
 
-        
         result_output = None
         result_format = None
 
@@ -198,6 +204,6 @@ class InterpreterRuntime:
         if result_format and result_format.lower() == "svg":
             if result_output and not isinstance(result_output, str):
                 return result_output.decode('utf-8')
-        
+
         return result_output
-        
+

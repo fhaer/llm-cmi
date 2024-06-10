@@ -256,7 +256,7 @@ class ConversationManager:
         """
         Starts the interpreter and returns the result and execution time.
         """
-        
+
         #bpmn_test_file = "test.bpmn"
         #bpmn_syntax_test = ""
         #if os.path.isfile(bpmn_test_file):
