@@ -252,7 +252,7 @@ class ConversationManager:
         
         return output
 
-    def execute_interpreter(self, input_syntax):
+    def execute_interpreter(self, int_input):
         """
         Starts the interpreter and returns the result and execution time.
         """
@@ -267,21 +267,23 @@ class ConversationManager:
 
         output = None
 
-        self.data_store.set_interpreter_configuration(self.selected_int_id, self.int_parameters)
-        self.data_store.insert_interpreter_input(input_syntax)
         t_start = perf_counter_ns()
-        interpreter_output = self.interpreter_runtime.run_syntax(input_syntax)
+        (int_input_modified, int_output) = self.interpreter_runtime.run_syntax(int_input)
         t_stop = perf_counter_ns()
+
+        self.data_store.set_interpreter_configuration(self.selected_int_id, self.int_parameters)
+        self.data_store.insert_interpreter_input(int_input_modified)
+
         execution_duration = (t_stop-t_start)
         print("Interpreter total execution duration [ns]:", execution_duration)
-        if interpreter_output:
+        if int_output:
             #self.conversational_ui.append_interpreter_output(image_output=interpreter_output)
-            output = interpreter_output
+            output = int_output
             self.data_store.insert_interpreter_output(output, execution_duration)
         else:
             self.data_store.insert_interpreter_output("no output", execution_duration)
         
-        return output
+        return (int_input_modified, output)
 
     def clear_chat_history(self, init_message):
         self.llm_api_client.clear_returned_context()
