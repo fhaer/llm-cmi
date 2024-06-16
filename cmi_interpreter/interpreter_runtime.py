@@ -23,20 +23,20 @@ xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
 xmlns:di="http://www.omg.org/spec/DD/20100524/DI" 
 id="<!--ID-->" 
 targetNamespace="http://bpmn.io/schema/bpmn" >
-<!--<bpmn:process>-->
-<!--<bpmndi:BPMNDiagram>-->
+<!--<bpmn:process-->
+<!--<bpmndi:BPMNDiagram-->
 </bpmn:definitions>
 """
 
 INT_BPMN_TEMPLATE_REPLACE_BY_PATTERN = {
-    "<!--<bpmn:process>-->": 
-        re.compile("<bpmn:process.*?</bpmn:process>", re.DOTALL | re.IGNORECASE),
-    "<!--<bpmndi:BPMNDiagram>-->":
-        re.compile("<bpmndi:BPMNDiagram.*?</bpmndi:BPMNDiagram>", re.DOTALL | re.IGNORECASE)
+    "<bpmn:process": 
+        re.compile("<(?:bpmn\:)?process(.*?</bpmn:process>)", re.DOTALL | re.IGNORECASE),
+    "<bpmndi:BPMNDiagram":
+        re.compile("<(?:bpmndi\:)?BPMNDiagram(.*?</bpmndi:BPMNDiagram>)", re.DOTALL | re.IGNORECASE)
 }
 
 INT_BPMN_TEMPLATE_REPLACE_BY_COMMAND = {
-    "<!--ID-->": '"llm-cmi-" + str(uuid.uuid4())'
+    "ID": '"llm-cmi-" + str(uuid.uuid4())'
 }
 
 INT_IDS = [
@@ -178,18 +178,21 @@ class InterpreterRuntime:
         # create template
         document = INT_BPMN_TEMPLATE
         
-        # for placeholders, find corresponding interpreter input and insert it
-        for placeholder in INT_BPMN_TEMPLATE_REPLACE_BY_PATTERN.keys():
-            pattern = INT_BPMN_TEMPLATE_REPLACE_BY_PATTERN[placeholder]
+        # for replacements, find corresponding interpreter input and insert it
+        for replacement in INT_BPMN_TEMPLATE_REPLACE_BY_PATTERN.keys():
+            pattern = INT_BPMN_TEMPLATE_REPLACE_BY_PATTERN[replacement]
             match = pattern.search(int_input)
             if match:
                 print("Found pattern for placeholder", placeholder, ", applying template ...")
-                document = document.replace(placeholder, match.group(0))
+                placeholder = "<!--" + replacement + "-->"
+                replace_by = replacement + match.group(1)
+                document = document.replace(placeholder, replace_by)
 
-        for placeholder in INT_BPMN_TEMPLATE_REPLACE_BY_COMMAND.keys():
-            cmd = INT_BPMN_TEMPLATE_REPLACE_BY_COMMAND[placeholder]
-            result = eval(cmd)
-            document = document.replace(placeholder, str(result))
+        for replacement in INT_BPMN_TEMPLATE_REPLACE_BY_COMMAND.keys():
+            cmd = INT_BPMN_TEMPLATE_REPLACE_BY_COMMAND[replacement]
+            placeholder = "<!--" + replacement + "-->"
+            replace_by = str(eval(cmd))
+            document = document.replace(placeholder, replace_by)
 
         return document
 
