@@ -30,9 +30,9 @@ targetNamespace="http://bpmn.io/schema/bpmn" >
 
 INT_BPMN_TEMPLATE_REPLACE_BY_PATTERN = {
     "<bpmn:process": 
-        re.compile("<(?:bpmn\:)?process(.*?</bpmn:process>)", re.DOTALL | re.IGNORECASE),
+        re.compile("<(?:bpmn:)?process(.*?</(?:bpmn:)?process>)", re.DOTALL | re.IGNORECASE),
     "<bpmndi:BPMNDiagram":
-        re.compile("<(?:bpmndi\:)?BPMNDiagram(.*?</bpmndi:BPMNDiagram>)", re.DOTALL | re.IGNORECASE)
+        re.compile("<(?:bpmndi:)?BPMNDiagram(.*?</(?:bpmndi:)?BPMNDiagram>)", re.DOTALL | re.IGNORECASE)
 }
 
 INT_BPMN_TEMPLATE_REPLACE_BY_COMMAND = {
