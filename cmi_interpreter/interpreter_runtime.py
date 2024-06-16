@@ -183,7 +183,7 @@ class InterpreterRuntime:
             pattern = INT_BPMN_TEMPLATE_REPLACE_BY_PATTERN[replacement]
             match = pattern.search(int_input)
             if match:
-                print("Found pattern for placeholder", placeholder, ", applying template ...")
+                print("Found pattern for replacement", replacement, ", applying template ...")
                 placeholder = "<!--" + replacement + "-->"
                 replace_by = replacement + match.group(1)
                 document = document.replace(placeholder, replace_by)
