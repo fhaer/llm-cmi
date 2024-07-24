@@ -4,4 +4,4 @@ replicate>=0.25.2
 openai==0.28
 requests
 plantweb
-
+setuptools
